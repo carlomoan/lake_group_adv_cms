@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ content?.siteTitle || 'Petroleum and Gas – Gas and Oil WordPress theme' }}</title>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400&subset=latin" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,900&subset=latin" rel="stylesheet">
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    </head>
+
+    <body>
+        <div id="app">
+            <!-- Loading State -->
+            <div v-if="!content" class="loading" style="padding: 50px; text-align: center; font-size: 18px;">
+                Loading content...
+            </div>
+
+            <!-- Main App Content -->
+            <div v-if="content">
+                <!-- Header -->
+                <header class="l-header creative-layout">
+                    <div class="top-bar-container contain-to-grid sticky">
+                        <nav class="top-bar" data-topbar="">
+                            <ul class="title-area">
+                                <li class="name">
+                                    <h1>
+                                        <a :title="content.siteTitle" rel="home"
+                                            :href="content.siteSettings?.logo?.link || '#home'"
+                                            :target="content.siteSettings?.logo?.linkTarget || '_self'">
+                                            <img class="logo"
+                                                :alt="content.siteSettings?.logo?.altText || content.siteTitle"
+                                                :src="getLogoSrc()" :style="getLogoStyles()">
+                                        </a>
+                                    </h1>
+                                </li>
+                                <li class="toggle-topbar menu-icon">
+                                    <button class="mobile-menu-toggle">☰</button>
+                                </li>
+                            </ul>
+                            <section class="creative top-bar-section right">
+                                <div class="menu-home-menu-container">
+                                    <ul id="menu-home-menu" class="menu">
+                                        <li v-for="(item, index) in content.navigation?.mainMenu" :key="index"
+                                            :class="['menu-item', item.hasDropdown ? 'has-dropdown not-click' : '', 'color-' + (index + 2)]">
+                                            <a :href="item.url" class="has-icon">{{ item.title }}</a>
+                                            <ul v-if="item.hasDropdown && item.children" class="sub-menu dropdown">
+                                                <li v-for="child in item.children" :key="child.title">
+                                                    <a :href="child.url" class="has-icon">{{ child.title }}</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </section>
+                            <div class="show-for-large-up creative-social">
+                                <ul class="social-icons inline-list">
+                                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                </header>
+
+                <!-- Hero Section -->
+                <section id="home" class="hero">
+                    <div class="hero-slider">
+                        <div v-for="(slide, index) in content.hero?.slides" :key="index"
+                            :class="['hero-slide', { active: currentSlide === index }]"
+                            :style="{ backgroundImage: `url('${slide.image}')` }">
+                            <div class="hero-content">
+                                <h4 :style="{ color: resolveColor(slide.titleColor || 'primary', slide.titleColorCustom) }">{{ slide.title }}</h4>
+                                <h2 :style="{ color: resolveColor(slide.subtitleColor || 'white', slide.subtitleColorCustom) }">{{ slide.subtitle }}</h2>
+                                <div class="hero-buttons" v-if="slide.buttons">
+                                    <a v-for="button in slide.buttons" :key="button.text" :href="button.url"
+                                        :class="['btn', button.type === 'primary' ? 'btn-primary' : 'btn-secondary']">{{
+                                        button.text }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slider Controls -->
+                    <div class="slider-controls" v-if="content.hero?.slides">
+                        <div v-for="(slide, index) in content.hero.slides" :key="index"
+                            :class="['slider-dot', { active: currentSlide === index }]" @click="goToSlide(index)"></div>
+                    </div>
+
+                    <!-- Slider Arrows -->
+                    <button class="slider-arrow prev" @click="prevSlide()">‹</button>
+                    <button class="slider-arrow next" @click="nextSlide()">›</button>
+                </section>
+
+                <!-- Main Content -->
+                <main class="l-main">
+                    <div class="main row">
+                        <article class="large-12 columns">
+                            <div class="body field clearfix">
+                                <section class="wpb-content-wrapper">
+                                    <!-- Services Section -->
+                                    <div class="services-section">
+                                        <div class="services-grid">
+                                            <div v-for="service in content.services?.items" :key="service.title"
+                                                class="wd-section-blog style2">
+                                                <div class="wd-blog-post test">
+                                                    <img :src="service.image" :alt="service.title">
+                                                    <h4 class="wd-title-element">{{ service.title }}</h4>
+                                                    <p>{{ service.description }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- About Section -->
+                                    <div class="about-section">
+                                        <div class="about-content">
+                                            <div class="about-text">
+                                                <h2>{{ content.aboutSection?.title || 'Save The Planet!' }}</h2>
+                                                <h5>{{ content.aboutSection?.description || 'Sed posuere consectetur est at lobortis...' }}</h5>
+                                            </div>
+                                            <div class="about-image">
+                                                <img :src="content.aboutSection?.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=391&h=447&fit=crop'"
+                                                    alt="Professional Worker">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Features Section -->
+                                    <div class="features-section">
+                                        <div class="features-container">
+                                            <h2 class="section-title">{{ content.featuresSection?.title || 'We Provide Energy' }}</h2>
+                                            <h5 class="section-subtitle">{{ content.featuresSection?.subtitle || 'To many clients like government, homes and offices' }}</h5>
+
+                                            <div class="features-row">
+                                                <div v-for="(feature, index) in content.featuresSection?.items?.slice(0, 4)"
+                                                    :key="feature.title" class="wd-section-text-icon">
+                                                    <div class="wd-text-icon-style5 fade-in">
+                                                        <div class="box-icon">
+                                                            <img :src="feature.icon" :alt="feature.title">
+                                                        </div>
+                                                        <div class="box-description">
+                                                            <h3>{{ feature.title }}</h3>
+                                                            <p>{{ feature.description }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="features-row" v-if="content.featuresSection?.items?.length > 4">
+                                                <div v-for="(feature, index) in content.featuresSection.items.slice(4, 8)"
+                                                    :key="feature.title" class="wd-section-text-icon">
+                                                    <div class="wd-text-icon-style5 fade-in">
+                                                        <div class="box-icon">
+                                                            <img :src="feature.icon" :alt="feature.title">
+                                                        </div>
+                                                        <div class="box-description">
+                                                            <h3>{{ feature.title }}</h3>
+                                                            <p>{{ feature.description }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Projects Section -->
+                                    <div class="projects-section">
+                                        <div class="projects-container">
+                                            <h2 class="section-title">{{ content.projectsSection?.title || 'Latest Projects' }}</h2>
+                                            <h5 class="section-subtitle">{{ content.projectsSection?.subtitle || 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.' }}</h5>
+
+                                            <div class="projects-grid">
+                                                <div v-for="project in content.projectsSection?.projects || content.latestProjects" :key="project.title"
+                                                    class="wd-project hvr-underline-from-center fade-in">
+                                                    <img :src="project.image" :alt="project.title">
+                                                    <h4><a :href="project.link">{{ project.title }}</a></h4>
+                                                    <p>{{ project.category }}<span>- </span>{{ project.description }}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="wd-more-project" v-if="content.projectsSection?.showMoreButton !== false">
+                                                <a class="btn btn-primary" :href="content.projectsSection?.moreButtonLink || '#'">
+                                                    <i class="fa fa-hand-o-right"></i> {{ content.projectsSection?.moreButtonText || 'MORE PROJECT' }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quote Section -->
+                                    <div v-if="content.quoteSection?.enabled !== false" class="quote-section" :style="{
+                                         backgroundColor: content.quoteSection?.backgroundColor || '#FFD200',
+                                         color: content.quoteSection?.textColor || '#333333'
+                                     }">
+                                        <div class="quote-container">
+                                            <h3 class="quote-content"
+                                                :class="'quote-size-' + (content.quoteSection?.fontSize || 'medium')">
+                                                <span class="quote-mark">"</span>
+                                                {{ content.quoteSection?.text || 'We help hardware startups integrate technology, scale and desirability without compromise' }}
+                                                <span class="quote-mark">"</span>
+                                            </h3>
+                                            <p v-if="content.quoteSection?.author" class="quote-author">
+                                                {{ content.quoteSection.author }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- News Section -->
+                                    <div class="news-section">
+                                        <div class="news-container">
+                                            <h2 class="section-title">Our Latest News</h2>
+                                            <h5 class="section-subtitle">Sed ut perspiciatis unde omnis iste natus error
+                                                sit voluptatem accusantium doloremque laudantium, totam rem aperiam.
+                                            </h5>
+
+                                            <ul class="simple-blog news-grid">
+                                                <li v-for="news in content.latestNews" :key="news.title">
+                                                    <div class="wd-latest-news hvr-underline-from-center fade-in">
+                                                        <div class="wd-image-date">
+                                                            <img :src="news.image" :alt="news.title">
+                                                            <span v-if="news.date"><strong>{{ formatDate(news.date).day
+                                                                    }}</strong>{{ formatDate(news.date).month }}</span>
+                                                        </div>
+                                                        <div class="news-content">
+                                                            <h4 class="wd-title-element"><a :href="news.link">{{
+                                                                    news.title }}</a></h4>
+                                                            <p>{{ news.excerpt }}
+                                                                <a class="hvr-pop read-more" :href="news.link">Read More
+                                                                    →</a>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- Newsletter Section -->
+                                    <div class="newsletter-section">
+                                        <div class="newsletter-container">
+                                            <div class="wpcf7" id="wpcf7-f976-p883-o1">
+                                                <form class="wpcf7-form" @submit.prevent="handleNewsletterSubmit">
+                                                    <div class="row">
+                                                        <div class="large-12 columns wd-title-section_c"
+                                                            style="margin-bottom: 30px;">
+                                                            <h2>{{ content.newsletter?.title || 'Get Latest Offers' }}
+                                                            </h2>
+                                                            <h5>{{ content.newsletter?.subtitle || 'Sed odio orci, fringilla nec dolor et, euismod auctor mauris. Curabitur semper dui diam, nec accumsan mauris consequat sed.' }}
+                                                            </h5>
+                                                        </div>
+                                                        <div class="large-4 columns">
+                                                            <input class="wpcf7-form-control wpcf7-text"
+                                                                placeholder="Your Name" type="text" required>
+                                                        </div>
+                                                        <div class="large-4 columns">
+                                                            <input class="wpcf7-form-control wpcf7-email"
+                                                                placeholder="Your Email" type="email" required>
+                                                        </div>
+                                                        <div class="large-4 columns">
+                                                            <input class="wpcf7-submit" type="submit" value="Subscribe">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </article>
+
+                        <div class="large-12 columns"></div>
+                    </div>
+                </main>
+
+                <!-- Footer -->
+                <section class="wd-footer">
+                    <div class="footer-content animation-parent">
+                        <!-- Dynamic Footer Columns -->
+                        <div v-for="(column, index) in content.footer?.columns || []" :key="index"
+                            class="footer-column">
+
+                            <!-- Logo Column -->
+                            <div v-if="column.type === 'logo'">
+                                <div class="footer-logo" v-if="column.logo || content.siteSettings?.logo">
+                                    <img alt="company logo" :src="column.logo || content.siteSettings?.logo">
+                                </div>
+                                <h2 v-if="column.title" class="block-title">{{ column.title }}</h2>
+                                <p v-if="column.description">{{ column.description }}</p>
+                            </div>
+
+                            <!-- Contact Column -->
+                            <div v-else-if="column.type === 'contact'">
+                                <h2 class="block-title">{{ column.title || 'Get in Touch' }}</h2>
+                                <ul class="contact-info">
+                                    <li v-if="column.contact?.phone">
+                                        <span>Phone:</span> {{ column.contact.phone }}
+                                    </li>
+                                    <li v-if="column.contact?.email">
+                                        <span>Email:</span> <a :href="'mailto:' + column.contact.email">{{
+                                            column.contact.email }}</a>
+                                    </li>
+                                    <li v-if="column.contact?.address">
+                                        <span>Address:</span> {{ column.contact.address }}
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Newsletter Column -->
+                            <div v-else-if="column.type === 'newsletter'">
+                                <h2 class="block-title">{{ column.title || 'Newsletter' }}</h2>
+                                <p>{{ column.newsletter?.description || 'Sign up for our newsletter' }}</p>
+                                <div class="newsletter-signup">
+                                    <input type="email" placeholder="EMAIL ADDRESS" id="newsletter-email">
+                                    <button type="submit" @click="handleNewsletterSignup">{{
+                                        column.newsletter?.buttonText || 'GO' }}</button>
+                                </div>
+                            </div>
+
+                            <!-- Social Media Column -->
+                            <div v-else-if="column.type === 'social'">
+                                <h2 class="block-title">{{ column.title || 'Follow Us' }}</h2>
+                                <ul class="footer-social">
+                                    <li v-for="social in column.socialLinks || []" :key="social.platform">
+                                        <a :href="social.url" :title="social.label || social.platform">
+                                            <i :class="getSocialIcon(social.platform)"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Links Column -->
+                            <div v-else-if="column.type === 'links'">
+                                <h2 class="block-title">{{ column.title || 'Quick Links' }}</h2>
+                                <ul class="footer-links">
+                                    <li v-for="link in column.links || []" :key="link.title">
+                                        <a :href="link.url">{{ link.title }}</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Custom Content Column -->
+                            <div v-else-if="column.type === 'custom'" v-html="column.customContent">
+                            </div>
+                        </div>
+
+                        <!-- Fallback for legacy footer structure -->
+                        <div v-if="!content.footer?.columns || content.footer.columns.length === 0">
+                            <div class="footer-column">
+                                <div class="footer-logo">
+                                    <img alt="logo"
+                                        :src="content.footer?.logo || content.siteSettings?.logo || 'https://via.placeholder.com/150x50/FFFFFF/333?text=PETROLEUM'">
+                                </div>
+                                <p>{{ content.footer?.description || 'Petroleum is the leader in the country sed diam nonumy eirmod tempor invidunt ut labore and efficient strategy.' }}</p>
+                            </div>
+
+                            <div class="footer-column">
+                                <h2 class="block-title">Get in Touch</h2>
+                                <ul class="contact-info">
+                                    <li v-if="content.footer?.contact?.phone">
+                                        <span>Phone:</span> {{ content.footer.contact.phone }}
+                                    </li>
+                                    <li v-if="content.footer?.contact?.email">
+                                        <span>Email:</span> <a :href="'mailto:' + content.footer.contact.email">{{
+                                            content.footer.contact.email }}</a>
+                                    </li>
+                                    <li v-if="content.footer?.contact?.address">
+                                        <span>Address:</span> {{ content.footer.contact.address }}
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="footer-column">
+                                <h2 class="block-title">Newsletter</h2>
+                                <p>Sign up your newsletter</p>
+                                <div class="newsletter-signup">
+                                    <input type="email" placeholder="EMAIL ADDRESS">
+                                    <button type="submit">GO</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer Copyright -->
+                <footer class="wd-copyright">
+                    <div class="copyright-content">
+                        <div class="copyright-menu">
+                            <ul class="footer-menu">
+                                <li v-for="item in content.footer?.menu" :key="item.title">
+                                    <a :href="item.url">{{ item.title }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="copyright">
+                            <p>{{ content.siteSettings?.footerText || '© 2025 Petroleum All rights reserved.' }}</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <script>
+            // Vue.js Application
+            const { createApp } = Vue;
+
+            createApp({
+                data() {
+                    return {
+                        content: null,
+                        currentSlide: 0,
+                        sliderInterval: null
+                    }
+                },
+                async mounted() {
+                    await this.loadContent();
+                    this.initializeSlider();
+                    this.initializeAnimations();
+                    this.initializeScrollEffects();
+                    this.initializeSmoothScrolling();
+                },
+                methods: {
+                    async loadContent() {
+                        try {
+                            const response = await fetch('/api/content-public');
+                            this.content = await response.json();
+
+                            // Update CSS variables if colors are provided
+                            if (this.content.siteSettings) {
+                                const root = document.documentElement;
+                                if (this.content.siteSettings.primaryColor) {
+                                    root.style.setProperty('--primary-color', this.content.siteSettings.primaryColor);
+                                }
+                                if (this.content.siteSettings.secondaryColor) {
+                                    root.style.setProperty('--secondary-color', this.content.siteSettings.secondaryColor);
+                                }
+                                if (this.content.siteSettings.tertiaryColor) {
+                                    root.style.setProperty('--tertiary-color', this.content.siteSettings.tertiaryColor);
+                                }
+
+                                // Set navbar background color
+                                if (this.content.siteSettings.navbar?.backgroundColor) {
+                                    root.style.setProperty('--navbar-bg-color', this.content.siteSettings.navbar.backgroundColor);
+                                }
+                            }
+
+                            // Update page title
+                            if (this.content.siteTitle) {
+                                document.title = this.content.siteTitle;
+                            }
+                        } catch (error) {
+                            console.error('Error loading content:', error);
+                            // Fallback to static content or show error
+                            this.content = this.getDefaultContent();
+                        }
+                    },
+                    getDefaultContent() {
+                        // Fallback content if API fails
+                        return {
+                            siteTitle: 'Petroleum and Gas – Gas and Oil WordPress theme',
+                            siteSettings: {
+                                logo: 'https://via.placeholder.com/150x50/FFD200/333?text=PETROLEUM',
+                                primaryColor: '#FFD200',
+                                secondaryColor: '#484939'
+                            },
+                            navigation: {
+                                mainMenu: [
+                                    { title: 'Home', url: '#home', hasDropdown: false },
+                                    { title: 'About', url: '#about', hasDropdown: false },
+                                    { title: 'Services', url: '#services', hasDropdown: false },
+                                    { title: 'Contact', url: '#contact', hasDropdown: false }
+                                ]
+                            },
+                            hero: {
+                                slides: [
+                                    {
+                                        title: 'NATURAL BEAUTY',
+                                        subtitle: 'Overcoming technology challenges: making the most of resources',
+                                        image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=700&fit=crop',
+                                        buttons: [
+                                            { text: 'READ MORE', url: '#about', type: 'primary' },
+                                            { text: 'READ MORE', url: '#services', type: 'secondary' }
+                                        ]
+                                    }
+                                ]
+                            },
+                            services: {
+                                items: [
+                                    {
+                                        title: 'OIL EXTRACTION',
+                                        description: 'As the world\'s largest green and clean energy specialist.',
+                                        image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=80&h=80&fit=crop&crop=center'
+                                    }
+                                ]
+                            }
+                        };
+                    },
+                    initializeSlider() {
+                        if (!this.content?.hero?.slides?.length) return;
+
+                        // Auto-play slider
+                        this.sliderInterval = setInterval(() => {
+                            this.nextSlide();
+                        }, 5000);
+                    },
+                    goToSlide(index) {
+                        if (!this.content?.hero?.slides?.length) return;
+                        this.currentSlide = index;
+                    },
+                    nextSlide() {
+                        if (!this.content?.hero?.slides?.length) return;
+                        this.currentSlide = (this.currentSlide + 1) % this.content.hero.slides.length;
+                    },
+                    prevSlide() {
+                        if (!this.content?.hero?.slides?.length) return;
+                        this.currentSlide = this.currentSlide === 0 ? this.content.hero.slides.length - 1 : this.currentSlide - 1;
+                    },
+                    initializeScrollEffects() {
+                        // Header scroll effect
+                        window.addEventListener('scroll', () => {
+                            const header = document.querySelector('.l-header');
+                            if (header) {
+                                if (window.scrollY > 50) {
+                                    header.classList.add('scrolled');
+                                } else {
+                                    header.classList.remove('scrolled');
+                                }
+                            }
+                        });
+                    },
+                    initializeAnimations() {
+                        // Intersection Observer for animations
+                        const observerOptions = {
+                            threshold: 0.1,
+                            rootMargin: '0px 0px -50px 0px'
+                        };
+
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    entry.target.classList.add('visible');
+                                    if (entry.target.classList.contains('wd-text-icon-style5')) {
+                                        entry.target.classList.add('animate');
+                                    }
+                                }
+                            });
+                        }, observerOptions);
+
+                        // Observe all fade-in elements
+                        this.$nextTick(() => {
+                            document.querySelectorAll('.fade-in, .wd-text-icon-style5').forEach(el => {
+                                observer.observe(el);
+                            });
+                        });
+                    },
+                    initializeSmoothScrolling() {
+                        // Smooth scrolling for navigation links
+                        this.$nextTick(() => {
+                            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                                anchor.addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                    const target = document.querySelector(this.getAttribute('href'));
+                                    if (target) {
+                                        target.scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'start'
+                                        });
+                                    }
+                                });
+                            });
+                        });
+                    },
+                    resolveColor(colorType, customColor) {
+                        if (colorType === 'custom' && customColor) {
+                            return customColor;
+                        }
+                        switch (colorType) {
+                            case 'primary':
+                                return this.content.siteSettings?.primaryColor || 'var(--primary-color, #FFD200)';
+                            case 'secondary':
+                                return this.content.siteSettings?.secondaryColor || 'var(--secondary-color, #484939)';
+                            case 'tertiary':
+                                return this.content.siteSettings?.tertiaryColor || 'var(--tertiary-color, #1E3A8A)';
+                            case 'white':
+                                return '#FFFFFF';
+                            case 'black':
+                                return '#000000';
+                            default:
+                                return this.content.siteSettings?.primaryColor || 'var(--primary-color, #FFD200)';
+                        }
+                    },
+                    formatDate(dateStr) {
+                        if (!dateStr) return { day: '', month: '' };
+
+                        // Handle different date formats
+                        if (dateStr.includes(' ')) {
+                            const parts = dateStr.split(' ');
+                            return { day: parts[0], month: parts[1] };
+                        }
+
+                        // Handle ISO date format
+                        const date = new Date(dateStr);
+                        const day = date.getDate();
+                        const month = date.toLocaleDateString('en', { month: 'short' });
+                        return { day: day.toString(), month };
+                    },
+                    handleNewsletterSubmit(event) {
+                        event.preventDefault();
+                        alert('Thank you for subscribing to our newsletter!');
+                        event.target.reset();
+                    },
+                    handleNewsletterSignup() {
+                        const email = document.getElementById('newsletter-email').value;
+                        if (email) {
+                            alert('Thank you for subscribing to our newsletter!');
+                            document.getElementById('newsletter-email').value = '';
+                        } else {
+                            alert('Please enter a valid email address.');
+                        }
+                    },
+                    getSocialIcon(platform) {
+                        const icons = {
+                            'facebook': 'fab fa-facebook-f',
+                            'twitter': 'fab fa-twitter',
+                            'instagram': 'fab fa-instagram',
+                            'linkedin': 'fab fa-linkedin-in',
+                            'youtube': 'fab fa-youtube',
+                            'tiktok': 'fab fa-tiktok'
+                        };
+                        return icons[platform] || 'fas fa-link';
+                    },
+                    getLogoSrc() {
+                        // Handle legacy string format
+                        if (typeof this.content?.siteSettings?.logo === 'string') {
+                            return this.content.siteSettings.logo;
+                        }
+
+                        // Use new object format
+                        const logo = this.content?.siteSettings?.logo;
+                        if (!logo) {
+                            return 'https://via.placeholder.com/150x50/FFD200/333?text=PETROLEUM';
+                        }
+
+                        // Check if navbar is scrolled/dark and use transparent logo if available
+                        const header = document.querySelector('.l-header');
+                        const isScrolled = header?.classList.contains('scrolled');
+
+                        if (isScrolled && logo.transparent) {
+                            return logo.transparent;
+                        }
+
+                        return logo.main || 'https://via.placeholder.com/150x50/FFD200/333?text=PETROLEUM';
+                    },
+                    getLogoStyles() {
+                        const logo = this.content?.siteSettings?.logo;
+                        if (!logo || typeof logo === 'string') {
+                            return {};
+                        }
+
+                        const styles = {};
+                        if (logo.width) {
+                            styles.width = logo.width + 'px';
+                        }
+                        if (logo.height) {
+                            styles.height = logo.height + 'px';
+                        }
+
+                        return styles;
+                    }
+                },
+                beforeUnmount() {
+                    if (this.sliderInterval) {
+                        clearInterval(this.sliderInterval);
+                    }
+                }
+            }).mount('#app');
+        </script>
+    </body>
+
+</html>

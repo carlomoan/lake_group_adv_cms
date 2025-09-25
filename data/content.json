@@ -1,0 +1,787 @@
+{
+  "siteTitle": "Lake Group - Eastern & Central Africa",
+  "siteSettings": {
+    "logo": "wp-content/uploads/logo/lake-group-logo.png",
+    "favicon": "wp-content/uploads/favicon.ico",
+    "primaryColor": "#FFD200",
+    "secondaryColor": "#484939",
+    "tertiaryColor": "#1E3A8A",
+    "navbarBackground": "#2D3748",
+    "footerText": "© 2024 Lake Group - Eastern & Central Africa. All rights reserved. Leading the region in energy, logistics, and manufacturing solutions.",
+    "footerBackgroundImage": "wp-content/uploads/footer-bg.jpg"
+  },
+  "navigation": {
+    "mainMenu": [
+      {
+        "id": "home",
+        "title": "Home",
+        "url": "#home",
+        "isActive": true,
+        "hasSubmenu": false
+      },
+      {
+        "id": "about",
+        "title": "About Us",
+        "url": "#about",
+        "isActive": false,
+        "hasSubmenu": true,
+        "submenu": [
+          {
+            "title": "Our Story",
+            "url": "#our-story"
+          },
+          {
+            "title": "Leadership Team",
+            "url": "#leadership"
+          },
+          {
+            "title": "Mission & Vision",
+            "url": "#mission"
+          }
+        ]
+      },
+      {
+        "id": "companies",
+        "title": "Our Companies",
+        "url": "#companies",
+        "isActive": false,
+        "hasSubmenu": true,
+        "submenu": [
+          {
+            "title": "Energy Solutions",
+            "url": "#energy-companies",
+            "submenu": [
+              {
+                "title": "Lake Oil Ltd",
+                "url": "#lake-oil"
+              },
+              {
+                "title": "Lake Gas Ltd",
+                "url": "#lake-gas"
+              },
+              {
+                "title": "Lake Lubes Ltd",
+                "url": "#lake-lubes"
+              }
+            ]
+          },
+          {
+            "title": "Logistics & Transport",
+            "url": "#logistics-companies",
+            "submenu": [
+              {
+                "title": "Lake Trans Ltd",
+                "url": "#lake-trans"
+              },
+              {
+                "title": "AFICD",
+                "url": "#aficd"
+              },
+              {
+                "title": "ACFS",
+                "url": "#acfs"
+              }
+            ]
+          },
+          {
+            "title": "Manufacturing",
+            "url": "#manufacturing-companies",
+            "submenu": [
+              {
+                "title": "Lake Steel Ltd",
+                "url": "#lake-steel"
+              },
+              {
+                "title": "Lake Building Solutions",
+                "url": "#lake-building"
+              },
+              {
+                "title": "Lake Premix",
+                "url": "#lake-premix"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "services",
+        "title": "Services",
+        "url": "#services",
+        "isActive": false,
+        "hasSubmenu": true,
+        "submenu": [
+          {
+            "title": "Oil & Gas Solutions",
+            "url": "#oil-gas-services"
+          },
+          {
+            "title": "Logistics Services",
+            "url": "#logistics-services"
+          },
+          {
+            "title": "Manufacturing Solutions",
+            "url": "#manufacturing-services"
+          }
+        ]
+      },
+      {
+        "id": "locations",
+        "title": "Our Presence",
+        "url": "#locations",
+        "isActive": false,
+        "hasSubmenu": false
+      },
+      {
+        "id": "contact",
+        "title": "Contact",
+        "url": "#contact",
+        "isActive": false,
+        "hasSubmenu": false
+      }
+    ]
+  },
+  "hero": {
+    "slides": [
+      {
+        "title": "Lake Oil providing an end to end solution",
+        "subtitle": "ENERGY EXCELLENCE",
+        "description": "Leading petroleum distribution with 38 Million Liters storage capacity, 300 tankers, and 85 retail stations across East and Central Africa",
+        "image": "wp-content/uploads/revslider/home-one-slider/oil.jpg",
+        "buttons": [
+          {
+            "text": "Our Services",
+            "url": "#services",
+            "style": "primary"
+          },
+          {
+            "text": "Learn More",
+            "url": "#about",
+            "style": "secondary"
+          }
+        ]
+      },
+      {
+        "title": "Committed to Quality - Lake Lubes Limited",
+        "subtitle": "PREMIUM LUBRICANTS",
+        "description": "Manufacturing and distributing premium quality lubricants and greases since 2014 using world-class raw materials",
+        "image": "wp-content/uploads/revslider/home-one-slider/glass-building.jpg",
+        "buttons": [
+          {
+            "text": "View Products",
+            "url": "#products",
+            "style": "primary"
+          },
+          {
+            "text": "Contact Us",
+            "url": "#contact",
+            "style": "secondary"
+          }
+        ]
+      },
+      {
+        "title": "Building the Future of Infrastructure",
+        "subtitle": "CONSTRUCTION EXCELLENCE",
+        "description": "From steel manufacturing to ready-mix concrete, delivering quality construction materials and solutions across the region",
+        "image": "wp-content/uploads/revslider/home-one-slider/construction.jpg",
+        "buttons": [
+          {
+            "text": "Our Projects",
+            "url": "#projects",
+            "style": "primary"
+          }
+        ]
+      }
+    ]
+  },
+  "services": {
+    "sectionTitle": "Our Core Services",
+    "sectionSubtitle": "Comprehensive solutions across energy, logistics, and manufacturing sectors",
+    "items": [
+      {
+        "id": "service1",
+        "title": "OIL & GAS DISTRIBUTION",
+        "description": "End-to-end petroleum solutions with extensive storage and distribution network across East and Central Africa",
+        "image": "wp-content/uploads/2016/01/11.jpg",
+        "features": [
+          "38 Million Liters Storage Capacity",
+          "300 Tanker Fleet",
+          "85 Retail Stations",
+          "Multi-country Operations"
+        ],
+        "link": "#oil-gas"
+      },
+      {
+        "id": "service2",
+        "title": "LOGISTICS & TRANSPORT",
+        "description": "Comprehensive transportation, container handling, and supply chain solutions for businesses across the region",
+        "image": "wp-content/uploads/2016/01/21.jpg",
+        "features": [
+          "Container Depot Services",
+          "Freight Consolidation",
+          "Cross-border Transport",
+          "Agricultural Logistics"
+        ],
+        "link": "#logistics"
+      },
+      {
+        "id": "service3",
+        "title": "MANUFACTURING SOLUTIONS",
+        "description": "Steel production, construction materials, and industrial manufacturing serving the growing infrastructure needs",
+        "image": "wp-content/uploads/2016/01/31.jpg",
+        "features": [
+          "Steel Fabrication",
+          "Ready-Mix Concrete",
+          "Pipe Manufacturing",
+          "Building Materials"
+        ],
+        "link": "#manufacturing"
+      }
+    ]
+  },
+  "aboutSection": {
+    "title": "Leading East & Central Africa's Growth",
+    "subtitle": "Building sustainable businesses across multiple sectors since 2006",
+    "description": "Lake Group has grown to become one of the fastest-growing conglomerates in East and Central Africa, with operations spanning oil and gas, logistics, and manufacturing sectors across 10 countries.",
+    "image": "wp-content/uploads/2016/01/CEO-d3.png",
+    "highlights": [
+      {
+        "title": "Regional Leadership",
+        "description": "Operations across Tanzania, Kenya, Uganda, Rwanda, Burundi, DRC, Zambia, Ethiopia, Mozambique, and Dubai"
+      },
+      {
+        "title": "Diverse Portfolio",
+        "description": "50+ companies operating in energy, logistics, and manufacturing sectors"
+      },
+      {
+        "title": "Quality Commitment",
+        "description": "Committed to delivering world-class products and services with focus on Health, Safety, and Environment standards"
+      }
+    ]
+  },
+  "featuresSection": {
+    "title": "Why Choose Lake Group",
+    "subtitle": "Excellence across all our business operations",
+    "items": [
+      {
+        "title": "Experienced Team",
+        "description": "2,184+ certified and experienced professionals delivering quality solutions",
+        "icon": "wp-content/uploads/2016/01/icon11.jpg"
+      },
+      {
+        "title": "Regional Network",
+        "description": "Extensive distribution and service network across 10 countries in East and Central Africa",
+        "icon": "wp-content/uploads/2016/01/icon22.jpg"
+      },
+      {
+        "title": "Quality Standards",
+        "description": "World-class raw materials and advanced technologies ensuring premium quality products",
+        "icon": "wp-content/uploads/2016/01/icon33.jpg"
+      },
+      {
+        "title": "Customer Focus",
+        "description": "Serving 3,472+ satisfied customers with comprehensive solutions and competitive pricing",
+        "icon": "wp-content/uploads/2016/01/icon44.jpg"
+      }
+    ]
+  },
+  "companies": {
+    "tanzania": {
+      "country": "Tanzania",
+      "energies": [
+        {
+          "name": "Lake Oil Ltd.",
+          "services": [
+            "Fuel Stations",
+            "Petroleum Distribution",
+            "Retail Operations"
+          ],
+          "description": "End-to-end petroleum solutions with extensive storage and distribution network"
+        },
+        {
+          "name": "Lake Lubes Ltd.",
+          "services": [
+            "Lubricant Manufacturing",
+            "Product Distribution",
+            "Technical Solutions"
+          ],
+          "description": "Premium quality lubricants and greases for automotive, industrial, and specialty applications"
+        },
+        {
+          "name": "Lake Gas Ltd.",
+          "services": [
+            "LPG Distribution",
+            "Gas Stations",
+            "Cylinder Supply"
+          ],
+          "description": "Comprehensive gas distribution and retail services"
+        },
+        {
+          "name": "Lake Aviation",
+          "services": [
+            "Aviation Fuel",
+            "Airport Services",
+            "Aircraft Fueling"
+          ],
+          "description": "Specialized aviation fuel and services"
+        }
+      ],
+      "logistics": [
+        {
+          "name": "Lake Trans Ltd.",
+          "services": [
+            "Transportation",
+            "Fleet Management",
+            "Logistics Solutions"
+          ],
+          "description": "Comprehensive transportation and logistics services"
+        },
+        {
+          "name": "AFICD (African Inland Container Depot)",
+          "services": [
+            "Container Handling",
+            "Cargo Storage",
+            "Inland Depot Services"
+          ],
+          "description": "Strategic inland container depot operations"
+        },
+        {
+          "name": "ACFS (African Container Freight Station)",
+          "services": [
+            "Freight Consolidation",
+            "Container Services",
+            "Cargo Handling"
+          ],
+          "description": "Container freight station and cargo consolidation"
+        },
+        {
+          "name": "AILL",
+          "services": [
+            "Logistics",
+            "Supply Chain",
+            "Transportation"
+          ],
+          "description": "Integrated logistics and supply chain solutions"
+        },
+        {
+          "name": "Lake Agro",
+          "services": [
+            "Agricultural Logistics",
+            "Farm Supplies",
+            "Rural Distribution"
+          ],
+          "description": "Agricultural sector logistics and distribution"
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "ATL",
+          "services": [
+            "Industrial Manufacturing",
+            "Production",
+            "Assembly"
+          ],
+          "description": "Advanced manufacturing solutions"
+        },
+        {
+          "name": "Lake Steel Ltd.",
+          "services": [
+            "Steel Production",
+            "Metal Fabrication",
+            "Construction Materials"
+          ],
+          "description": "Steel manufacturing and metal fabrication"
+        },
+        {
+          "name": "Gulf Aggregate",
+          "services": [
+            "Aggregate Production",
+            "Construction Materials",
+            "Quarrying"
+          ],
+          "description": "High-quality aggregate and construction materials"
+        },
+        {
+          "name": "LAKE PIPES",
+          "services": [
+            "Pipe Manufacturing",
+            "Pipeline Solutions",
+            "Industrial Piping"
+          ],
+          "description": "Comprehensive pipe manufacturing and pipeline solutions"
+        },
+        {
+          "name": "LAKE CYLINDERS",
+          "services": [
+            "Cylinder Manufacturing",
+            "Gas Containers",
+            "Pressure Vessels"
+          ],
+          "description": "Specialized cylinder and pressure vessel manufacturing"
+        },
+        {
+          "name": "Lake Premix",
+          "services": [
+            "Ready Mix Concrete",
+            "Construction Materials",
+            "Concrete Solutions"
+          ],
+          "description": "Ready mix concrete and construction material solutions"
+        },
+        {
+          "name": "Lake Building Solutions",
+          "services": [
+            "Construction Services",
+            "Building Materials",
+            "Project Management"
+          ],
+          "description": "Comprehensive building and construction solutions"
+        },
+        {
+          "name": "Lake Building Store",
+          "services": [
+            "Building Materials Retail",
+            "Construction Supplies",
+            "Hardware"
+          ],
+          "description": "Retail building materials and construction supplies"
+        },
+        {
+          "name": "Cross-country",
+          "services": [
+            "Transportation",
+            "Cross-border Logistics",
+            "Regional Distribution"
+          ],
+          "description": "Cross-country transportation and regional logistics"
+        }
+      ]
+    },
+    "burundi": {
+      "country": "Burundi",
+      "companies": [
+        {
+          "name": "Lake Gas Ltd.",
+          "services": [
+            "LPG Distribution",
+            "Gas Retail",
+            "Energy Solutions"
+          ],
+          "description": "Gas distribution and energy solutions in Burundi"
+        },
+        {
+          "name": "Burundi Petroleum Ltd.",
+          "services": [
+            "Petroleum Distribution",
+            "Fuel Retail",
+            "Energy Supply"
+          ],
+          "description": "Petroleum products distribution and retail operations"
+        }
+      ]
+    },
+    "drc": {
+      "country": "Democratic Republic of Congo",
+      "companies": [
+        {
+          "name": "Lake Gas Ltd.",
+          "services": [
+            "LPG Distribution",
+            "Gas Retail",
+            "Energy Solutions"
+          ],
+          "description": "Gas distribution and energy solutions in DRC"
+        },
+        {
+          "name": "Lake Lubes Ltd.",
+          "services": [
+            "Lubricant Distribution",
+            "Industrial Lubes",
+            "Automotive Products"
+          ],
+          "description": "Lubricant distribution and automotive products"
+        },
+        {
+          "name": "DRC Petroleum Ltd.",
+          "services": [
+            "Petroleum Distribution",
+            "Fuel Supply",
+            "Energy Infrastructure"
+          ],
+          "description": "Petroleum distribution and energy infrastructure"
+        }
+      ]
+    },
+    "zambia": {
+      "country": "Zambia",
+      "companies": [
+        {
+          "name": "Lake Petroleum",
+          "services": [
+            "Petroleum Distribution",
+            "Fuel Retail",
+            "Energy Supply"
+          ],
+          "description": "Petroleum products and fuel distribution"
+        },
+        {
+          "name": "Lake Gas",
+          "services": [
+            "LPG Distribution",
+            "Gas Retail",
+            "Energy Solutions"
+          ],
+          "description": "Gas distribution and energy solutions"
+        },
+        {
+          "name": "Lake Trans",
+          "services": [
+            "Transportation",
+            "Logistics",
+            "Fleet Services"
+          ],
+          "description": "Transportation and logistics services"
+        },
+        {
+          "name": "Aficd",
+          "services": [
+            "Container Depot",
+            "Cargo Handling",
+            "Logistics"
+          ],
+          "description": "Container depot and cargo handling services"
+        },
+        {
+          "name": "Lake Agro",
+          "services": [
+            "Agricultural Services",
+            "Farm Logistics",
+            "Rural Distribution"
+          ],
+          "description": "Agricultural services and rural distribution"
+        }
+      ]
+    },
+    "uganda": {
+      "country": "Uganda",
+      "companies": [
+        {
+          "name": "Lake oil Uganda ltd",
+          "services": [
+            "Petroleum Distribution",
+            "Fuel Retail",
+            "Energy Supply"
+          ],
+          "description": "Petroleum distribution and fuel retail operations"
+        },
+        {
+          "name": "lake gas Uganda ltd",
+          "services": [
+            "LPG Distribution",
+            "Gas Retail",
+            "Energy Solutions"
+          ],
+          "description": "Gas distribution and energy solutions"
+        }
+      ]
+    },
+    "rwanda": {
+      "country": "Rwanda",
+      "companies": [
+        {
+          "name": "Lake Gas Ltd.",
+          "services": [
+            "LPG Distribution",
+            "Gas Retail",
+            "Energy Solutions"
+          ],
+          "description": "Gas distribution and energy solutions"
+        },
+        {
+          "name": "Lake Lubes Ltd.",
+          "services": [
+            "Lubricant Distribution",
+            "Industrial Lubes",
+            "Automotive Products"
+          ],
+          "description": "Lubricant distribution and automotive products"
+        },
+        {
+          "name": "Lake Petroleum Ltd.",
+          "services": [
+            "Petroleum Distribution",
+            "Fuel Supply",
+            "Energy Infrastructure"
+          ],
+          "description": "Petroleum distribution and energy infrastructure"
+        }
+      ]
+    },
+    "dubai": {
+      "country": "Dubai, UAE",
+      "companies": [
+        {
+          "name": "MERM (Middle East Ready Mix LLC)",
+          "services": [
+            "Ready Mix Concrete",
+            "Construction Materials",
+            "Building Solutions"
+          ],
+          "description": "Ready mix concrete and construction materials in the Middle East"
+        }
+      ]
+    },
+    "mozambique": {
+      "country": "Mozambique",
+      "companies": [
+        {
+          "name": "Lake Oil",
+          "services": [
+            "Petroleum Distribution",
+            "Fuel Retail",
+            "Energy Supply"
+          ],
+          "description": "Petroleum distribution and fuel retail operations"
+        },
+        {
+          "name": "AFICD Mozambique",
+          "services": [
+            "Container Depot",
+            "Cargo Handling",
+            "Logistics"
+          ],
+          "description": "Container depot and cargo handling services"
+        },
+        {
+          "name": "Lake Energies",
+          "services": [
+            "Energy Solutions",
+            "Power Generation",
+            "Renewable Energy"
+          ],
+          "description": "Comprehensive energy solutions and power generation"
+        }
+      ]
+    },
+    "kenya": {
+      "country": "Kenya",
+      "companies": [
+        {
+          "name": "Lake Gas Ltd.",
+          "services": [
+            "LPG Distribution",
+            "Gas Retail",
+            "Energy Solutions"
+          ],
+          "description": "Gas distribution and energy solutions"
+        },
+        {
+          "name": "Lake Lubes Ltd.",
+          "services": [
+            "Lubricant Distribution",
+            "Industrial Lubes",
+            "Automotive Products"
+          ],
+          "description": "Lubricant distribution and automotive products"
+        },
+        {
+          "name": "Lake Oil Ltd.",
+          "services": [
+            "Petroleum Distribution",
+            "Fuel Retail",
+            "Energy Supply"
+          ],
+          "description": "Petroleum distribution and fuel retail operations"
+        },
+        {
+          "name": "Lake Trans Ltd.",
+          "services": [
+            "Transportation",
+            "Logistics",
+            "Fleet Services"
+          ],
+          "description": "Transportation and logistics services"
+        }
+      ]
+    },
+    "ethiopia": {
+      "country": "Ethiopia",
+      "companies": [
+        {
+          "name": "Wadi Elsundus Petroleum Co",
+          "services": [
+            "Petroleum Distribution",
+            "Fuel Supply",
+            "Energy Infrastructure"
+          ],
+          "description": "Petroleum distribution and energy infrastructure solutions"
+        }
+      ]
+    }
+  },
+  "statistics": {
+    "countries": 10,
+    "companies": 50,
+    "customers": "3,472+",
+    "employees": "2,184+",
+    "storage_capacity": "38 Million Liters",
+    "tankers": 300,
+    "retail_stations": 85
+  },
+  "contact": {
+    "headquarters": {
+      "location": "Dar es Salaam, Tanzania",
+      "address": "Plot 49, Mikocheni Light Industrial Area",
+      "email": "admin@lakeoilgroup.com",
+      "phone": [
+        "+255 222780479",
+        "+255 222780510"
+      ]
+    }
+  },
+  "latestNews": [
+    {
+      "title": "Lake Group Expands Operations to Mozambique",
+      "excerpt": "We're proud to announce the expansion of our energy and logistics operations into Mozambique, strengthening our presence in the East African market.",
+      "image": "wp-content/uploads/news/mozambique-expansion.jpg",
+      "date": "2024-03-15",
+      "link": "#news/mozambique-expansion"
+    },
+    {
+      "title": "New Steel Manufacturing Facility Opens in Tanzania",
+      "excerpt": "Lake Steel Ltd. inaugurates a state-of-the-art manufacturing facility, increasing our production capacity by 40% to meet growing regional demand.",
+      "image": "wp-content/uploads/news/steel-facility.jpg",
+      "date": "2024-02-28",
+      "link": "#news/steel-facility"
+    },
+    {
+      "title": "Partnership with Regional Agricultural Cooperatives",
+      "excerpt": "Lake Agro partners with local cooperatives to improve rural logistics and support agricultural development across East Africa.",
+      "image": "wp-content/uploads/news/agro-partnership.jpg",
+      "date": "2024-02-10",
+      "link": "#news/agro-partnership"
+    }
+  ],
+  "latestProjects": [
+    {
+      "title": "Dar es Salaam Port Infrastructure Development",
+      "description": "Complete logistics infrastructure upgrade including container handling facilities and fuel storage systems.",
+      "image": "wp-content/uploads/projects/port-infrastructure.jpg",
+      "category": "Infrastructure",
+      "link": "#projects/port-infrastructure"
+    },
+    {
+      "title": "Regional Fuel Distribution Network",
+      "description": "Expansion of our fuel distribution network with 15 new retail stations across Tanzania, Uganda, and Kenya.",
+      "image": "wp-content/uploads/projects/fuel-network.jpg",
+      "category": "Energy",
+      "link": "#projects/fuel-network"
+    },
+    {
+      "title": "Green Energy Initiative",
+      "description": "Implementation of solar power systems across our manufacturing facilities, reducing carbon footprint by 30%.",
+      "image": "wp-content/uploads/projects/green-energy.jpg",
+      "category": "Sustainability",
+      "link": "#projects/green-energy"
+    }
+  ]
+}
