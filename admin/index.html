@@ -96,13 +96,7 @@
             <p>Full Website Management System - Control Everything</p>
         </div>
 
-        <!-- Loading State -->
-        <div v-if="!content" style="text-align: center; padding: 50px;">
-            <h2>Loading Petroleum & Gas CMS...</h2>
-            <p>Please wait while the admin interface initializes.</p>
-        </div>
-
-        <div v-if="content" class="admin-container">
+        <div class="admin-container">
             <div class="sidebar">
                 <div class="nav-section">
                     <div class="nav-section-title">Site Basics</div>
@@ -331,12 +325,14 @@
                     <h3>Logo Settings</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Main Logo URL:</label>
-                            <input v-model="content.siteSettings.logo.logoMain" class="form-input" placeholder="Main logo image URL">
+                            <label>Main Logo:</label>
+                            <input @change="handleLogoUpload('logoMain', $event)" type="file" accept="image/*" class="form-input">
+                            <small>Upload main logo image</small>
                         </div>
                         <div class="form-group">
-                            <label>Sticky Logo URL:</label>
-                            <input v-model="content.siteSettings.logo.logoTransparent" class="form-input" placeholder="Logo for sticky/scrolled navbar">
+                            <label>Sticky Logo:</label>
+                            <input @change="handleLogoUpload('logoTransparent', $event)" type="file" accept="image/*" class="form-input">
+                            <small>Upload logo for sticky/scrolled navbar</small>
                         </div>
                     </div>
 
@@ -418,15 +414,18 @@
 
                 <!-- Dropdown Styling Panel -->
                 <div :class="['content-panel', { hidden: activeTab !== 'dropdown' }]" v-if="content && content.siteSettings && content.siteSettings.navbar && content.siteSettings.navbar.dropdown">
-                    <h2><i class="fas fa-angle-down"></i> Dropdown Menu Styling</h2>
+                    <h2><i class="fas fa-angle-down"></i> Advanced Dropdown Menu System</h2>
 
+                    <h3>Dropdown Layout Options</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Dropdown Background:</label>
-                            <select v-model="content.siteSettings.navbar.dropdown.backgroundType" class="form-select">
-                                <option value="color">Solid Color</option>
-                                <option value="gradient">Gradient</option>
-                                <option value="image">Background Image</option>
+                            <label>Dropdown Type:</label>
+                            <select v-model="content.siteSettings.navbar.dropdown.layoutType" class="form-select">
+                                <option value="standard">Standard Dropdown</option>
+                                <option value="mega-menu-2col">Mega Menu (2 Columns)</option>
+                                <option value="mega-menu-3col">Mega Menu (3 Columns)</option>
+                                <option value="mega-menu-4col">Mega Menu (4 Columns)</option>
+                                <option value="full-width">Full Width Mega Menu</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -440,16 +439,57 @@
                         </div>
                     </div>
 
+                    <h3>Background Styling</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Background Type:</label>
+                            <select v-model="content.siteSettings.navbar.dropdown.backgroundType" class="form-select">
+                                <option value="color">Solid Color</option>
+                                <option value="gradient">Gradient</option>
+                                <option value="image">Background Image</option>
+                                <option value="transparent">Transparent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Dropdown Width (px):</label>
+                            <input v-model.number="content.siteSettings.navbar.dropdown.width" type="number" class="form-input" min="200" max="1200">
+                        </div>
+                    </div>
+
                     <div v-if="content.siteSettings.navbar.dropdown.backgroundType === 'color'" class="form-group">
-                        <label>Dropdown Background Color:</label>
+                        <label>Background Color:</label>
                         <input v-model="content.siteSettings.navbar.dropdown.backgroundColor" type="color" class="form-input">
                     </div>
 
-                    <div v-if="content.siteSettings.navbar.dropdown.backgroundType === 'image'" class="form-group">
-                        <label>Background Image URL:</label>
-                        <input v-model="content.siteSettings.navbar.dropdown.backgroundImage" class="form-input">
+                    <div v-if="content.siteSettings.navbar.dropdown.backgroundType === 'gradient'" class="form-row">
+                        <div class="form-group">
+                            <label>Gradient Start Color:</label>
+                            <input v-model="content.siteSettings.navbar.dropdown.gradientStart" type="color" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Gradient End Color:</label>
+                            <input v-model="content.siteSettings.navbar.dropdown.gradientEnd" type="color" class="form-input">
+                        </div>
                     </div>
 
+                    <div v-if="content.siteSettings.navbar.dropdown.backgroundType === 'image'" class="form-row">
+                        <div class="form-group">
+                            <label>Background Image:</label>
+                            <input @change="handleDropdownImageUpload($event)" type="file" accept="image/*" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Image Position:</label>
+                            <select v-model="content.siteSettings.navbar.dropdown.backgroundPosition" class="form-select">
+                                <option value="center">Center</option>
+                                <option value="top">Top</option>
+                                <option value="bottom">Bottom</option>
+                                <option value="left">Left</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3>Text & Typography</h3>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Text Color:</label>
@@ -461,6 +501,18 @@
                         </div>
                     </div>
 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Font Size (px):</label>
+                            <input v-model.number="content.siteSettings.navbar.dropdown.fontSize" type="number" class="form-input" min="12" max="24">
+                        </div>
+                        <div class="form-group">
+                            <label>Line Height:</label>
+                            <input v-model.number="content.siteSettings.navbar.dropdown.lineHeight" type="number" step="0.1" class="form-input" min="1" max="3">
+                        </div>
+                    </div>
+
+                    <h3>Spacing & Effects</h3>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Border Radius (px):</label>
@@ -477,7 +529,42 @@
                         </div>
                     </div>
 
-                    <button @click="saveContent" class="btn btn-primary">Save Dropdown Styling</button>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Item Padding (px):</label>
+                            <input v-model.number="content.siteSettings.navbar.dropdown.itemPadding" type="number" class="form-input" min="5" max="30">
+                        </div>
+                        <div class="form-group">
+                            <label>Border Style:</label>
+                            <select v-model="content.siteSettings.navbar.dropdown.borderStyle" class="form-select">
+                                <option value="none">No Border</option>
+                                <option value="solid">Solid Border</option>
+                                <option value="dashed">Dashed Border</option>
+                                <option value="dotted">Dotted Border</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3>Multi-Level Dropdown Settings</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <input v-model="content.siteSettings.navbar.dropdown.enableMultiLevel" type="checkbox" class="form-checkbox">
+                                Enable Multi-Level Dropdowns (3+ levels)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Sub-menu Arrow Style:</label>
+                            <select v-model="content.siteSettings.navbar.dropdown.arrowStyle" class="form-select">
+                                <option value="chevron">Chevron (›)</option>
+                                <option value="arrow">Arrow (→)</option>
+                                <option value="plus">Plus (+)</option>
+                                <option value="none">No Arrow</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Advanced Dropdown Settings</button>
                 </div>
 
                 <!-- Hero Slider Panel -->
@@ -504,8 +591,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Background Image URL:</label>
-                            <input v-model="slide.image" class="form-input" placeholder="Hero background image">
+                            <label>Background Image:</label>
+                            <input @change="handleSlideImageUpload(index, $event)" type="file" accept="image/*" class="form-input">
+                            <small>Upload hero background image</small>
                         </div>
 
                         <div class="form-row">
@@ -581,7 +669,8 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Service Icon/Image:</label>
-                                <input v-model="service.image" class="form-input" placeholder="Service icon URL">
+                                <input @change="handleServiceImageUpload(index, $event)" type="file" accept="image/*" class="form-input">
+                                <small>Upload service icon or image</small>
                             </div>
                             <div class="form-group">
                                 <label>Service Title:</label>
@@ -619,8 +708,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label>About Image URL:</label>
-                        <input v-model="content.aboutSection.image" class="form-input" placeholder="About section image">
+                        <label>About Section Image:</label>
+                        <input @change="handleAboutImageUpload($event)" type="file" accept="image/*" class="form-input">
+                        <small>Upload about section image</small>
                     </div>
 
                     <div class="form-row">
@@ -664,8 +754,9 @@
                                 <input v-model="feature.title" class="form-input" placeholder="Feature Title">
                             </div>
                             <div class="form-group">
-                                <label>Icon/Image URL:</label>
-                                <input v-model="feature.icon" class="form-input" placeholder="Icon URL">
+                                <label>Feature Icon/Image:</label>
+                                <input @change="handleFeatureImageUpload(index, $event)" type="file" accept="image/*" class="form-input">
+                                <small>Upload feature icon or image</small>
                             </div>
                         </div>
 
@@ -679,64 +770,503 @@
                     <button @click="saveContent" class="btn btn-primary">Save Features</button>
                 </div>
 
-                <!-- Footer Panel -->
-                <div :class="['content-panel', { hidden: activeTab !== 'footer' }]">
-                    <h2><i class="fas fa-layer-group"></i> Footer Management</h2>
+                <!-- Projects Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'projects' }]">
+                    <h2><i class="fas fa-briefcase"></i> Projects Management</h2>
 
-                    <div class="form-group">
-                        <label>Footer Description:</label>
-                        <textarea v-model="content.footer.description" class="form-textarea" placeholder="Company description for footer..."></textarea>
-                    </div>
-
-                    <h3>Contact Information</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Phone Number:</label>
-                            <input v-model="content.footer.contact.phone" class="form-input" placeholder="+1 (555) 123-4567">
+                            <label>Section Title:</label>
+                            <input v-model="content.projects.sectionTitle" class="form-input" placeholder="Latest Projects">
                         </div>
                         <div class="form-group">
-                            <label>Email Address:</label>
-                            <input v-model="content.footer.contact.email" class="form-input" placeholder="info@company.com">
+                            <label>Section Subtitle:</label>
+                            <input v-model="content.projects.sectionSubtitle" class="form-input" placeholder="Our recent work">
+                        </div>
+                    </div>
+
+                    <div v-for="(project, index) in content.projects.items" :key="index" class="item-container">
+                        <div class="item-header">
+                            <span class="item-title">Project {{ index + 1 }}</span>
+                            <button @click="removeProject(index)" class="btn btn-danger">Remove Project</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Project Title:</label>
+                                <input v-model="project.title" class="form-input" placeholder="Project Title">
+                            </div>
+                            <div class="form-group">
+                                <label>Project Category:</label>
+                                <input v-model="project.category" class="form-input" placeholder="Oil Extraction, Pipeline, etc.">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Project Image:</label>
+                            <input @change="handleProjectImageUpload(index, $event)" type="file" accept="image/*" class="form-input">
+                            <small>Upload project image</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Project Description:</label>
+                            <textarea v-model="project.description" class="form-textarea" placeholder="Project description..."></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Project URL (optional):</label>
+                                <input v-model="project.url" class="form-input" placeholder="Link to project details">
+                            </div>
+                            <div class="form-group">
+                                <label>Client Name (optional):</label>
+                                <input v-model="project.client" class="form-input" placeholder="Client name">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Project Date:</label>
+                                <input v-model="project.date" type="date" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Project Status:</label>
+                                <select v-model="project.status" class="form-select">
+                                    <option value="completed">Completed</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="planned">Planned</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button @click="addProject" class="btn btn-success">Add New Project</button>
+                    <button @click="saveContent" class="btn btn-primary">Save Projects</button>
+                </div>
+
+                <!-- News Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'news' }]">
+                    <h2><i class="fas fa-newspaper"></i> News Management</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Section Title:</label>
+                            <input v-model="content.news.sectionTitle" class="form-input" placeholder="Our Latest News">
+                        </div>
+                        <div class="form-group">
+                            <label>Section Subtitle:</label>
+                            <input v-model="content.news.sectionSubtitle" class="form-input" placeholder="Stay updated with our latest developments">
+                        </div>
+                    </div>
+
+                    <div v-for="(article, index) in content.news.articles" :key="index" class="item-container">
+                        <div class="item-header">
+                            <span class="item-title">News Article {{ index + 1 }}</span>
+                            <button @click="removeNewsArticle(index)" class="btn btn-danger">Remove Article</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Article Title:</label>
+                                <input v-model="article.title" class="form-input" placeholder="Article headline">
+                            </div>
+                            <div class="form-group">
+                                <label>Publication Date:</label>
+                                <input v-model="article.date" type="date" class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Featured Image:</label>
+                            <input @change="handleNewsImageUpload(index, $event)" type="file" accept="image/*" class="form-input">
+                            <small>Upload article featured image</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Article Excerpt:</label>
+                            <textarea v-model="article.excerpt" class="form-textarea" placeholder="Brief description or excerpt of the article..."></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Article URL:</label>
+                                <input v-model="article.url" class="form-input" placeholder="Link to full article">
+                            </div>
+                            <div class="form-group">
+                                <label>Category:</label>
+                                <select v-model="article.category" class="form-select">
+                                    <option value="industry-news">Industry News</option>
+                                    <option value="company-updates">Company Updates</option>
+                                    <option value="project-spotlight">Project Spotlight</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="sustainability">Sustainability</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Author:</label>
+                                <input v-model="article.author" class="form-input" placeholder="Article author">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input v-model="article.featured" type="checkbox" class="form-checkbox">
+                                    Featured Article
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button @click="addNewsArticle" class="btn btn-success">Add New Article</button>
+                    <button @click="saveContent" class="btn btn-primary">Save News</button>
+                </div>
+
+                <!-- Page Layout Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'layout' }]">
+                    <h2><i class="fas fa-th-large"></i> Page Layout Management</h2>
+
+                    <div class="form-group">
+                        <label>Page Container Width:</label>
+                        <select v-model="content.layout.containerWidth" class="form-select">
+                            <option value="1200px">Standard (1200px)</option>
+                            <option value="1140px">Compact (1140px)</option>
+                            <option value="1400px">Wide (1400px)</option>
+                            <option value="100%">Full Width (100%)</option>
+                        </select>
+                    </div>
+
+                    <h3>Section Order & Visibility</h3>
+                    <div v-for="(section, index) in content.layout.sections" :key="index" class="item-container">
+                        <div class="item-header">
+                            <span class="item-title">{{ section.name }}</span>
+                            <div>
+                                <button @click="moveSectionUp(index)" :disabled="index === 0" class="btn btn-secondary">↑</button>
+                                <button @click="moveSectionDown(index)" :disabled="index === content.layout.sections.length - 1" class="btn btn-secondary">↓</button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>
+                                    <input v-model="section.visible" type="checkbox" class="form-checkbox">
+                                    Show this section on the website
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>Section Background:</label>
+                                <select v-model="section.backgroundType" class="form-select">
+                                    <option value="none">None</option>
+                                    <option value="color">Solid Color</option>
+                                    <option value="gradient">Gradient</option>
+                                    <option value="image">Background Image</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div v-if="section.backgroundType === 'color'" class="form-group">
+                            <label>Background Color:</label>
+                            <input v-model="section.backgroundColor" type="color" class="form-input">
+                        </div>
+
+                        <div v-if="section.backgroundType === 'image'" class="form-group">
+                            <label>Background Image URL:</label>
+                            <input v-model="section.backgroundImage" class="form-input" placeholder="Background image URL">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Section Padding (px):</label>
+                                <input v-model.number="section.padding" type="number" class="form-input" min="0" max="200">
+                            </div>
+                            <div class="form-group">
+                                <label>Section Margin (px):</label>
+                                <input v-model.number="section.margin" type="number" class="form-input" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Responsive Settings</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mobile Breakpoint (px):</label>
+                            <input v-model.number="content.layout.mobileBreakpoint" type="number" class="form-input" min="320" max="768">
+                        </div>
+                        <div class="form-group">
+                            <label>Tablet Breakpoint (px):</label>
+                            <input v-model.number="content.layout.tabletBreakpoint" type="number" class="form-input" min="768" max="1024">
+                        </div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Layout Settings</button>
+                </div>
+
+                <!-- Components Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'components' }]">
+                    <h2><i class="fas fa-puzzle-piece"></i> Components Management</h2>
+
+                    <h3>Available Components</h3>
+                    <div v-for="(component, index) in content.components.available" :key="index" class="item-container">
+                        <div class="item-header">
+                            <span class="item-title">{{ component.name }}</span>
+                            <div>
+                                <button @click="toggleComponent(index)" :class="['btn', component.enabled ? 'btn-success' : 'btn-secondary']">
+                                    {{ component.enabled ? 'Enabled' : 'Disabled' }}
+                                </button>
+                                <button @click="editComponent(index)" class="btn btn-primary">Configure</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Component Description:</label>
+                            <p style="color: #666; font-size: 14px;">{{ component.description }}</p>
+                        </div>
+
+                        <div v-if="component.configurable && component.showConfig" class="form-group">
+                            <h4>Component Settings</h4>
+
+                            <div v-if="component.type === 'contact-form'" class="form-row">
+                                <div class="form-group">
+                                    <label>Form Title:</label>
+                                    <input v-model="component.settings.title" class="form-input" placeholder="Contact Us">
+                                </div>
+                                <div class="form-group">
+                                    <label>Form Style:</label>
+                                    <select v-model="component.settings.style" class="form-select">
+                                        <option value="modern">Modern</option>
+                                        <option value="classic">Classic</option>
+                                        <option value="minimal">Minimal</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div v-if="component.type === 'scroll-top'" class="form-row">
+                                <div class="form-group">
+                                    <label>Button Position:</label>
+                                    <select v-model="component.settings.position" class="form-select">
+                                        <option value="bottom-right">Bottom Right</option>
+                                        <option value="bottom-left">Bottom Left</option>
+                                        <option value="bottom-center">Bottom Center</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Button Style:</label>
+                                    <select v-model="component.settings.style" class="form-select">
+                                        <option value="circle">Circle</option>
+                                        <option value="square">Square</option>
+                                        <option value="arrow">Arrow</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div v-if="component.type === 'animation'" class="form-row">
+                                <div class="form-group">
+                                    <label>Animation Speed:</label>
+                                    <select v-model="component.settings.speed" class="form-select">
+                                        <option value="slow">Slow</option>
+                                        <option value="normal">Normal</option>
+                                        <option value="fast">Fast</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Animation Trigger:</label>
+                                    <select v-model="component.settings.trigger" class="form-select">
+                                        <option value="scroll">On Scroll</option>
+                                        <option value="hover">On Hover</option>
+                                        <option value="click">On Click</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Custom CSS</h3>
+                    <div class="form-group">
+                        <label>Additional CSS:</label>
+                        <textarea v-model="content.components.customCSS" class="form-textarea" style="height: 150px;" placeholder="/* Add your custom CSS here */"></textarea>
+                    </div>
+
+                    <h3>Custom JavaScript</h3>
+                    <div class="form-group">
+                        <label>Additional JavaScript:</label>
+                        <textarea v-model="content.components.customJS" class="form-textarea" style="height: 150px;" placeholder="// Add your custom JavaScript here"></textarea>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Components</button>
+                </div>
+
+                <!-- Footer Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'footer' }]">
+                    <h2><i class="fas fa-layer-group"></i> Advanced Footer Management</h2>
+
+                    <h3>Footer Layout</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Footer Layout:</label>
+                            <select v-model="content.footer.layout" class="form-select">
+                                <option value="single">Single Column</option>
+                                <option value="two-column">Two Columns</option>
+                                <option value="three-column">Three Columns (Default)</option>
+                                <option value="four-column">Four Columns</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Footer Background:</label>
+                            <select v-model="content.footer.backgroundType" class="form-select">
+                                <option value="color">Solid Color</option>
+                                <option value="image">Background Image</option>
+                                <option value="gradient">Gradient</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-if="content.footer.backgroundType === 'color'" class="form-group">
+                        <label>Footer Background Color:</label>
+                        <input v-model="content.footer.backgroundColor" type="color" class="form-input">
+                    </div>
+
+                    <div v-if="content.footer.backgroundType === 'image'" class="form-row">
+                        <div class="form-group">
+                            <label>Background Image:</label>
+                            <input @change="handleFooterBackgroundUpload($event)" type="file" accept="image/*" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Background Size:</label>
+                            <select v-model="content.footer.backgroundSize" class="form-select">
+                                <option value="cover">Cover</option>
+                                <option value="contain">Contain</option>
+                                <option value="repeat">Repeat</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-if="content.footer.backgroundType === 'gradient'" class="form-row">
+                        <div class="form-group">
+                            <label>Gradient Start:</label>
+                            <input v-model="content.footer.gradientStart" type="color" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Gradient End:</label>
+                            <input v-model="content.footer.gradientEnd" type="color" class="form-input">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Physical Address:</label>
-                        <textarea v-model="content.footer.contact.address" class="form-textarea" placeholder="123 Main St, City, State 12345"></textarea>
+                        <label>Footer Text Color:</label>
+                        <input v-model="content.footer.textColor" type="color" class="form-input">
                     </div>
 
-                    <h3>Footer Menu</h3>
-                    <div v-for="(item, index) in content.footer.menu" :key="index" class="item-container">
-                        <div class="form-row">
+                    <!-- Column 1: Company Info & Logo -->
+                    <h3>Column 1: Company Information</h3>
+                    <div class="item-container">
+                        <div class="form-group">
+                            <label>Column Title:</label>
+                            <input v-model="content.footer.columns.column1.title" class="form-input" placeholder="Company Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Company Logo:</label>
+                            <input @change="handleFooterLogoUpload($event)" type="file" accept="image/*" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Company Description:</label>
+                            <textarea v-model="content.footer.columns.column1.description" class="form-textarea" placeholder="Company description..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Additional Info:</label>
+                            <textarea v-model="content.footer.columns.column1.additionalInfo" class="form-textarea" placeholder="Additional company information..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Contact Information -->
+                    <h3>Column 2: Contact Information</h3>
+                    <div class="item-container">
+                        <div class="form-group">
+                            <label>Column Title:</label>
+                            <input v-model="content.footer.columns.column2.title" class="form-input" placeholder="Get in Touch">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone Number:</label>
+                            <input v-model="content.footer.columns.column2.phone" class="form-input" placeholder="+255565195320">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address:</label>
+                            <input v-model="content.footer.columns.column2.email" class="form-input" placeholder="info@company.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address:</label>
+                            <textarea v-model="content.footer.columns.column2.address" class="form-textarea" placeholder="Physical address..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Business Hours:</label>
+                            <textarea v-model="content.footer.columns.column2.businessHours" class="form-textarea" placeholder="Mon-Fri: 9AM-6PM"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Newsletter & Social -->
+                    <h3>Column 3: Newsletter & Links</h3>
+                    <div class="item-container">
+                        <div class="form-group">
+                            <label>Column Title:</label>
+                            <input v-model="content.footer.columns.column3.title" class="form-input" placeholder="Newsletter">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Newsletter Description:</label>
+                            <textarea v-model="content.footer.columns.column3.description" class="form-textarea" placeholder="Sign up your newsletter"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Placeholder Text:</label>
+                            <input v-model="content.footer.columns.column3.emailPlaceholder" class="form-input" placeholder="EMAIL ADDRESS">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Subscribe Button Text:</label>
+                            <input v-model="content.footer.columns.column3.buttonText" class="form-input" placeholder="GO">
+                        </div>
+
+                        <h4>Quick Links</h4>
+                        <div v-for="(link, index) in content.footer.columns.column3.quickLinks" :key="index" class="form-row">
                             <div class="form-group">
-                                <input v-model="item.title" class="form-input" placeholder="Footer menu item">
+                                <input v-model="link.title" class="form-input" placeholder="Link title">
+                            </div>
+                            <div class="form-group">
+                                <input v-model="link.url" class="form-input" placeholder="Link URL">
+                            </div>
+                            <button @click="removeQuickLink(index)" class="btn btn-danger">×</button>
+                        </div>
+                        <button @click="addQuickLink" class="btn btn-secondary">Add Quick Link</button>
+                    </div>
+
+                    <!-- Footer Bottom Bar -->
+                    <h3>Footer Bottom Bar</h3>
+                    <div class="item-container">
+                        <div class="form-group">
+                            <label>Copyright Text:</label>
+                            <input v-model="content.footer.copyright.text" class="form-input" placeholder="© 2025 Company Name. All rights reserved.">
+                        </div>
+
+                        <h4>Footer Menu Items</h4>
+                        <div v-for="(item, index) in content.footer.copyright.menu" :key="index" class="form-row">
+                            <div class="form-group">
+                                <input v-model="item.title" class="form-input" placeholder="Menu item">
                             </div>
                             <div class="form-group">
                                 <input v-model="item.url" class="form-input" placeholder="URL">
                             </div>
-                            <button @click="removeFooterMenuItem(index)" class="btn btn-danger">Remove</button>
+                            <button @click="removeFooterMenuItem(index)" class="btn btn-danger">×</button>
                         </div>
+                        <button @click="addFooterMenuItem" class="btn btn-secondary">Add Footer Menu Item</button>
                     </div>
 
-                    <button @click="addFooterMenuItem" class="btn btn-success">Add Footer Menu Item</button>
-
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label>Copyright Text:</label>
-                        <input v-model="content.footer.copyrightText" class="form-input" placeholder="© 2025 Company Name. All rights reserved.">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Footer Background Color:</label>
-                            <input v-model="content.footer.backgroundColor" type="color" class="form-input">
-                        </div>
-                        <div class="form-group">
-                            <label>Footer Text Color:</label>
-                            <input v-model="content.footer.textColor" type="color" class="form-input">
-                        </div>
-                    </div>
-
-                    <button @click="saveContent" class="btn btn-primary">Save Footer</button>
+                    <button @click="saveContent" class="btn btn-primary">Save Advanced Footer</button>
                 </div>
 
                 <!-- Social Media Panel -->
@@ -961,6 +1491,7 @@
         </div>
     </div>
 
+    <script src="database-integration.js"></script>
     <script>
         const { createApp } = Vue;
 
@@ -972,6 +1503,7 @@
                     importFile: null,
                     lastBackupDate: null,
 
+                    isLoading: false,
                     content: {
                         siteSettings: {
                             siteTitle: 'Petroleum and Gas – Gas and Oil WordPress theme',
@@ -993,14 +1525,25 @@
                                 textColor: '#333333',
                                 hoverColor: '#FFD200',
                                 dropdown: {
+                                    layoutType: 'standard',
                                     backgroundType: 'color',
                                     backgroundColor: '#ffffff',
                                     backgroundImage: '',
+                                    backgroundPosition: 'center',
+                                    gradientStart: '#ffffff',
+                                    gradientEnd: '#f8f9fa',
                                     textColor: '#333333',
                                     hoverTextColor: '#FFD200',
                                     borderRadius: 4,
                                     shadow: 'medium',
-                                    animation: 'fade'
+                                    animation: 'fade',
+                                    width: 250,
+                                    fontSize: 14,
+                                    lineHeight: 1.5,
+                                    itemPadding: 12,
+                                    borderStyle: 'none',
+                                    enableMultiLevel: true,
+                                    arrowStyle: 'chevron'
                                 }
                             },
                             logo: {
@@ -1075,22 +1618,276 @@
                             backgroundColor: '#484939',
                             textColor: '#ffffff'
                         },
+                        features: {
+                            title: 'Why Choose Us',
+                            subtitle: 'Excellence in every aspect',
+                            items: [
+                                {
+                                    title: 'Professional Service',
+                                    icon: '',
+                                    description: 'Professional and reliable service with years of experience in the industry.'
+                                },
+                                {
+                                    title: 'Quality Assurance',
+                                    icon: '',
+                                    description: 'Quality guaranteed with international standards and certifications.'
+                                },
+                                {
+                                    title: '24/7 Support',
+                                    icon: '',
+                                    description: 'Round-the-clock customer support for all your energy needs.'
+                                }
+                            ]
+                        },
                         footer: {
-                            description: 'Petroleum is the leader in the country sed diam nonumy eirmod tempor invidunt ut labore and efficient strategy.',
-                            contact: {
-                                phone: '+1 (555) 123-4567',
-                                email: 'info@petroleum-gas.com',
-                                address: '123 Energy Drive, Oil City, TX 75001'
-                            },
-                            menu: [
-                                { title: 'About Us', url: '#about' },
-                                { title: 'Services', url: '#services' },
-                                { title: 'Contact', url: '#contact' },
-                                { title: 'Privacy Policy', url: '#privacy' }
-                            ],
-                            copyrightText: '© 2025 Petroleum & Gas. All rights reserved.',
+                            layout: 'three-column',
+                            backgroundType: 'image',
                             backgroundColor: '#2c3e50',
-                            textColor: '#ffffff'
+                            backgroundImage: '',
+                            backgroundSize: 'cover',
+                            gradientStart: '#2c3e50',
+                            gradientEnd: '#34495e',
+                            textColor: '#ffffff',
+                            columns: {
+                                column1: {
+                                    title: 'Petroleum & Gas',
+                                    logo: '',
+                                    description: 'Petroleum is the leader in the country sed diam nonumy eirmod tempor invidunt ut labore and efficient strategy.',
+                                    additionalInfo: 'We provide the energy to medium and big company, sadipscing elitr, sed diam nonumy.'
+                                },
+                                column2: {
+                                    title: 'Get in Touch',
+                                    phone: '+255565195320',
+                                    email: 'info@petroleum-gas.com',
+                                    address: '123 Energy Drive, Oil City, TX 75001',
+                                    businessHours: 'Mon-Fri: 9AM-6PM\nSat: 9AM-2PM\nSun: Closed'
+                                },
+                                column3: {
+                                    title: 'Newsletter',
+                                    description: 'Sign up your newsletter',
+                                    emailPlaceholder: 'EMAIL ADDRESS',
+                                    buttonText: 'GO',
+                                    quickLinks: [
+                                        { title: 'Services', url: '#services' },
+                                        { title: 'About Us', url: '#about' },
+                                        { title: 'Contact', url: '#contact' }
+                                    ]
+                                }
+                            },
+                            copyright: {
+                                text: '© 2025 Petroleum & Gas. All rights reserved.',
+                                menu: [
+                                    { title: 'Home', url: '/' },
+                                    { title: 'About Us', url: '#about' },
+                                    { title: 'Blog', url: '#blog' },
+                                    { title: 'Contact', url: '#contact' }
+                                ]
+                            }
+                        },
+                        projects: {
+                            sectionTitle: 'Latest Projects',
+                            sectionSubtitle: 'Our recent work',
+                            items: [
+                                {
+                                    title: 'Frozen Trees In A Lake',
+                                    category: 'Environmental',
+                                    image: 'https://themes.webdevia.com/petroleum-gas/wp-content/uploads/2013/06/8555736073_8cde64941a_b-380x254.jpg',
+                                    description: 'Professional environmental assessment and restoration project in arctic conditions.',
+                                    url: '#project-1',
+                                    client: 'Arctic Energy Corp',
+                                    date: '2024-12-15',
+                                    status: 'completed'
+                                },
+                                {
+                                    title: 'Pipeline Infrastructure',
+                                    category: 'Pipeline Construction',
+                                    image: '',
+                                    description: 'Major pipeline construction project connecting remote oil fields to processing facilities.',
+                                    url: '#project-2',
+                                    client: 'TransEnergy Solutions',
+                                    date: '2024-10-20',
+                                    status: 'completed'
+                                },
+                                {
+                                    title: 'Offshore Drilling Platform',
+                                    category: 'Offshore Operations',
+                                    image: '',
+                                    description: 'Advanced offshore drilling platform installation and commissioning project.',
+                                    url: '#project-3',
+                                    client: 'Ocean Energy Ltd',
+                                    date: '2024-08-05',
+                                    status: 'completed'
+                                }
+                            ]
+                        },
+                        news: {
+                            sectionTitle: 'Our Latest News',
+                            sectionSubtitle: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+                            articles: [
+                                {
+                                    title: 'Dignissim phasellus ultrices tellus',
+                                    date: '2024-08-28',
+                                    image: 'https://themes.webdevia.com/petroleum-gas/wp-content/uploads/2014/08/8555735563_846457fcc5_b.jpg',
+                                    excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                                    url: '#article-1',
+                                    category: 'industry-news',
+                                    author: 'Editorial Team',
+                                    featured: true
+                                },
+                                {
+                                    title: 'Excepteur sint occaecat cupidatat',
+                                    date: '2024-08-28',
+                                    image: 'https://themes.webdevia.com/petroleum-gas/wp-content/uploads/2014/08/8555736997_53252a5258_b.jpg',
+                                    excerpt: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                                    url: '#article-2',
+                                    category: 'technology',
+                                    author: 'Technical Team',
+                                    featured: false
+                                },
+                                {
+                                    title: 'Aenean nonummy hendrerit mauris',
+                                    date: '2024-08-28',
+                                    image: 'https://themes.webdevia.com/petroleum-gas/wp-content/uploads/2014/08/stock-photo-oil-pump-jacks-at-sunset-sky-background-toned-316001336.jpg',
+                                    excerpt: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+                                    url: '#article-3',
+                                    category: 'project-spotlight',
+                                    author: 'Project Manager',
+                                    featured: false
+                                }
+                            ]
+                        },
+                        layout: {
+                            containerWidth: '1200px',
+                            mobileBreakpoint: 768,
+                            tabletBreakpoint: 1024,
+                            sections: [
+                                {
+                                    name: 'Hero Slider',
+                                    id: 'hero',
+                                    visible: true,
+                                    backgroundType: 'none',
+                                    backgroundColor: '#ffffff',
+                                    backgroundImage: '',
+                                    padding: 0,
+                                    margin: 0
+                                },
+                                {
+                                    name: 'Services Section',
+                                    id: 'services',
+                                    visible: true,
+                                    backgroundType: 'none',
+                                    backgroundColor: '#f8f9fa',
+                                    backgroundImage: '',
+                                    padding: 80,
+                                    margin: 0
+                                },
+                                {
+                                    name: 'About Section',
+                                    id: 'about',
+                                    visible: true,
+                                    backgroundType: 'color',
+                                    backgroundColor: '#484939',
+                                    backgroundImage: '',
+                                    padding: 80,
+                                    margin: 0
+                                },
+                                {
+                                    name: 'Projects Section',
+                                    id: 'projects',
+                                    visible: true,
+                                    backgroundType: 'none',
+                                    backgroundColor: '#ffffff',
+                                    backgroundImage: '',
+                                    padding: 80,
+                                    margin: 0
+                                },
+                                {
+                                    name: 'News Section',
+                                    id: 'news',
+                                    visible: true,
+                                    backgroundType: 'none',
+                                    backgroundColor: '#f8f9fa',
+                                    backgroundImage: '',
+                                    padding: 80,
+                                    margin: 0
+                                },
+                                {
+                                    name: 'Footer',
+                                    id: 'footer',
+                                    visible: true,
+                                    backgroundType: 'color',
+                                    backgroundColor: '#2c3e50',
+                                    backgroundImage: '',
+                                    padding: 60,
+                                    margin: 0
+                                }
+                            ]
+                        },
+                        components: {
+                            available: [
+                                {
+                                    name: 'Contact Form',
+                                    type: 'contact-form',
+                                    enabled: true,
+                                    configurable: true,
+                                    showConfig: false,
+                                    description: 'Interactive contact form for visitor inquiries',
+                                    settings: {
+                                        title: 'Contact Us',
+                                        style: 'modern'
+                                    }
+                                },
+                                {
+                                    name: 'Scroll to Top Button',
+                                    type: 'scroll-top',
+                                    enabled: true,
+                                    configurable: true,
+                                    showConfig: false,
+                                    description: 'Button to smoothly scroll back to the top of the page',
+                                    settings: {
+                                        position: 'bottom-right',
+                                        style: 'circle'
+                                    }
+                                },
+                                {
+                                    name: 'Loading Animations',
+                                    type: 'animation',
+                                    enabled: true,
+                                    configurable: true,
+                                    showConfig: false,
+                                    description: 'Smooth animations for page elements on scroll',
+                                    settings: {
+                                        speed: 'normal',
+                                        trigger: 'scroll'
+                                    }
+                                },
+                                {
+                                    name: 'Google Maps Integration',
+                                    type: 'maps',
+                                    enabled: false,
+                                    configurable: false,
+                                    showConfig: false,
+                                    description: 'Embedded Google Maps for location display'
+                                },
+                                {
+                                    name: 'Live Chat Widget',
+                                    type: 'chat',
+                                    enabled: false,
+                                    configurable: false,
+                                    showConfig: false,
+                                    description: 'Real-time chat support for visitors'
+                                },
+                                {
+                                    name: 'Cookie Consent Banner',
+                                    type: 'cookies',
+                                    enabled: false,
+                                    configurable: false,
+                                    showConfig: false,
+                                    description: 'GDPR-compliant cookie consent notification'
+                                }
+                            ],
+                            customCSS: '',
+                            customJS: ''
                         },
                         socialMedia: {
                             facebook: '',
@@ -1203,16 +2000,207 @@
                     this.content.services.items.splice(index, 1);
                 },
 
+                // Projects Management
+                addProject() {
+                    this.content.projects.items.push({
+                        title: '',
+                        category: '',
+                        image: '',
+                        description: '',
+                        url: '',
+                        client: '',
+                        date: '',
+                        status: 'planned'
+                    });
+                },
+
+                removeProject(index) {
+                    this.content.projects.items.splice(index, 1);
+                },
+
+                // News Management
+                addNewsArticle() {
+                    this.content.news.articles.push({
+                        title: '',
+                        date: new Date().toISOString().split('T')[0],
+                        image: '',
+                        excerpt: '',
+                        url: '',
+                        category: 'industry-news',
+                        author: '',
+                        featured: false
+                    });
+                },
+
+                removeNewsArticle(index) {
+                    this.content.news.articles.splice(index, 1);
+                },
+
+                // Layout Management
+                moveSectionUp(index) {
+                    if (index > 0) {
+                        const sections = this.content.layout.sections;
+                        const temp = sections[index];
+                        sections[index] = sections[index - 1];
+                        sections[index - 1] = temp;
+                    }
+                },
+
+                moveSectionDown(index) {
+                    if (index < this.content.layout.sections.length - 1) {
+                        const sections = this.content.layout.sections;
+                        const temp = sections[index];
+                        sections[index] = sections[index + 1];
+                        sections[index + 1] = temp;
+                    }
+                },
+
+                // Components Management
+                toggleComponent(index) {
+                    this.content.components.available[index].enabled = !this.content.components.available[index].enabled;
+                },
+
+                editComponent(index) {
+                    const component = this.content.components.available[index];
+                    if (component.configurable) {
+                        component.showConfig = !component.showConfig;
+                    }
+                },
+
                 // Footer Management
                 addFooterMenuItem() {
-                    this.content.footer.menu.push({
+                    this.content.footer.copyright.menu.push({
                         title: '',
                         url: ''
                     });
                 },
 
                 removeFooterMenuItem(index) {
-                    this.content.footer.menu.splice(index, 1);
+                    this.content.footer.copyright.menu.splice(index, 1);
+                },
+
+                addQuickLink() {
+                    this.content.footer.columns.column3.quickLinks.push({
+                        title: '',
+                        url: ''
+                    });
+                },
+
+                removeQuickLink(index) {
+                    this.content.footer.columns.column3.quickLinks.splice(index, 1);
+                },
+
+                // File Upload Handlers
+                handleLogoUpload(logoType, event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        // In a real application, you would upload the file to your server
+                        // For now, we'll create a local URL for preview
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.siteSettings.logo[logoType] = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleDropdownImageUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.siteSettings.navbar.dropdown.backgroundImage = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleSlideImageUpload(index, event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.hero.slides[index].image = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleServiceImageUpload(index, event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.services.items[index].image = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleAboutImageUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.aboutSection.image = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleFeatureImageUpload(index, event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.features.items[index].icon = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleProjectImageUpload(index, event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.projects.items[index].image = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleNewsImageUpload(index, event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.news.articles[index].image = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleFooterBackgroundUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.footer.backgroundImage = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                handleFooterLogoUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.content.footer.columns.column1.logo = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
                 },
 
                 // Media Management
@@ -1406,10 +2394,10 @@
                 }
             },
 
-            async mounted() {
-                await this.loadContent();
-                await this.loadMediaLibrary();
+            mounted() {
                 console.log('Complete Petroleum & Gas CMS loaded - Full website control ready!');
+                // Load additional data if needed
+                this.loadMediaLibrary();
             }
         }).mount('#app');
     </script>
