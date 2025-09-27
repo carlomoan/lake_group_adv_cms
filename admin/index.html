@@ -1,2527 +1,1417 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Petroleum & Gas - Advanced Content Management System</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet">
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            :root {
-                --primary: #667eea;
-                --primary-dark: #5a6fd8;
-                --success: #10b981;
-                --danger: #ef4444;
-                --warning: #f59e0b;
-                --info: #3b82f6;
-                --light: #f8fafc;
-                --dark: #1e293b;
-                --border: #e2e8f0;
-                --text: #334155;
-                --text-light: #64748b;
-                --sidebar-width: 280px;
-                --header-height: 70px;
-            }
-
-            body {
-                font-family: 'Inter', sans-serif;
-                background: var(--light);
-                color: var(--text);
-                line-height: 1.6;
-            }
-
-            /* Sidebar */
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                width: var(--sidebar-width);
-                height: 100vh;
-                background: white;
-                border-right: 1px solid var(--border);
-                z-index: 1000;
-                overflow-y: auto;
-                transition: transform 0.3s ease;
-            }
-
-            .sidebar.collapsed {
-                transform: translateX(-100%);
-            }
-
-            .sidebar-header {
-                padding: 20px;
-                border-bottom: 1px solid var(--border);
-                background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-                color: white;
-            }
-
-            .sidebar-title {
-                font-size: 18px;
-                font-weight: 600;
-                margin-bottom: 5px;
-            }
-
-            .sidebar-subtitle {
-                font-size: 12px;
-                opacity: 0.8;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            .sidebar-nav {
-                padding: 20px 0;
-            }
-
-            .nav-section {
-                margin-bottom: 30px;
-            }
-
-            .nav-section-title {
-                padding: 0 20px;
-                font-size: 11px;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                color: var(--text-light);
-                margin-bottom: 10px;
-            }
-
-            .nav-item {
-                position: relative;
-            }
-
-            .nav-link {
-                display: flex;
-                align-items: center;
-                padding: 12px 20px;
-                color: var(--text);
-                text-decoration: none;
-                transition: all 0.2s ease;
-                border-right: 3px solid transparent;
-                cursor: pointer;
-            }
-
-            .nav-link:hover {
-                background: #f1f5f9;
-                color: var(--primary);
-            }
-
-            .nav-link.active {
-                background: #f1f5f9;
-                color: var(--primary);
-                border-right-color: var(--primary);
-                font-weight: 500;
-            }
-
-            .nav-icon {
-                width: 20px;
-                margin-right: 12px;
-                text-align: center;
-            }
-
-            .nav-badge {
-                margin-left: auto;
-                background: var(--danger);
-                color: white;
-                font-size: 10px;
-                padding: 2px 6px;
-                border-radius: 10px;
-                font-weight: 600;
-            }
-
-            /* Main Content */
-            .main-content {
-                margin-left: var(--sidebar-width);
-                min-height: 100vh;
-                background: var(--light);
-                transition: margin-left 0.3s ease;
-            }
-
-            .main-content.sidebar-collapsed {
-                margin-left: 0;
-            }
-
-            /* Header */
-            .header {
-                height: var(--header-height);
-                background: white;
-                border-bottom: 1px solid var(--border);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 0 30px;
-                position: sticky;
-                top: 0;
-                z-index: 100;
-            }
-
-            .header-left {
-                display: flex;
-                align-items: center;
-                gap: 20px;
-            }
-
-            .sidebar-toggle {
-                background: none;
-                border: none;
-                font-size: 18px;
-                color: var(--text);
-                cursor: pointer;
-                padding: 8px;
-                border-radius: 8px;
-                transition: background 0.2s;
-            }
-
-            .sidebar-toggle:hover {
-                background: var(--light);
-            }
-
-            .breadcrumb {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                font-size: 14px;
-            }
-
-            .breadcrumb-item {
-                color: var(--text-light);
-            }
-
-            .breadcrumb-item.active {
-                color: var(--text);
-                font-weight: 500;
-            }
-
-            .header-right {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-            }
-
-            .header-actions {
-                display: flex;
-                gap: 10px;
-            }
-
-            .btn {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                padding: 8px 16px;
-                border: none;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                text-decoration: none;
-                line-height: 1;
-            }
-
-            .btn-primary {
-                background: var(--primary);
-                color: white;
-            }
-
-            .btn-primary:hover {
-                background: var(--primary-dark);
-                transform: translateY(-1px);
-            }
-
-            .btn-secondary {
-                background: white;
-                color: var(--text);
-                border: 1px solid var(--border);
-            }
-
-            .btn-secondary:hover {
-                background: var(--light);
-            }
-
-            .btn-success {
-                background: var(--success);
-                color: white;
-            }
-
-            .btn-danger {
-                background: var(--danger);
-                color: white;
-            }
-
-            .btn-sm {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            /* Content Area */
-            .content {
-                padding: 30px;
-            }
-
-            .content-header {
-                margin-bottom: 30px;
-            }
-
-            .content-title {
-                font-size: 28px;
-                font-weight: 700;
-                color: var(--dark);
-                margin-bottom: 8px;
-            }
-
-            .content-subtitle {
-                color: var(--text-light);
-                font-size: 16px;
-            }
-
-            /* Cards */
-            .card {
-                background: white;
-                border-radius: 12px;
-                border: 1px solid var(--border);
-                overflow: hidden;
-                margin-bottom: 30px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-
-            .card-header {
-                padding: 20px 25px;
-                border-bottom: 1px solid var(--border);
-                background: #fafbfc;
-            }
-
-            .card-title {
-                font-size: 18px;
-                font-weight: 600;
-                color: var(--dark);
-                margin: 0;
-            }
-
-            .card-subtitle {
-                color: var(--text-light);
-                font-size: 14px;
-                margin-top: 4px;
-            }
-
-            .card-body {
-                padding: 25px;
-            }
-
-            .card-footer {
-                padding: 20px 25px;
-                border-top: 1px solid var(--border);
-                background: #fafbfc;
-                display: flex;
-                justify-content: flex-end;
-                gap: 10px;
-            }
-
-            /* Tabs */
-            .tabs {
-                background: white;
-                border-radius: 12px;
-                border: 1px solid var(--border);
-                overflow: hidden;
-            }
-
-            .tabs-header {
-                display: flex;
-                background: #fafbfc;
-                border-bottom: 1px solid var(--border);
-                overflow-x: auto;
-            }
-
-            .tab-button {
-                background: none;
-                border: none;
-                padding: 15px 20px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 500;
-                color: var(--text-light);
-                border-bottom: 3px solid transparent;
-                transition: all 0.2s ease;
-                white-space: nowrap;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .tab-button:hover {
-                background: rgba(102, 126, 234, 0.05);
-                color: var(--primary);
-            }
-
-            .tab-button.active {
-                color: var(--primary);
-                border-bottom-color: var(--primary);
-                background: white;
-            }
-
-            .tab-content {
-                display: none;
-                padding: 30px;
-                max-height: 70vh;
-                overflow-y: auto;
-            }
-
-            .tab-content.active {
-                display: block;
-            }
-
-            /* Forms */
-            .form-grid {
-                display: grid;
-                gap: 20px;
-            }
-
-            .form-grid.cols-2 {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .form-grid.cols-3 {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-
-            .form-group {
-                margin-bottom: 20px;
-            }
-
-            .form-label {
-                display: block;
-                margin-bottom: 6px;
-                font-weight: 500;
-                color: var(--dark);
-                font-size: 14px;
-            }
-
-            .form-label.required::after {
-                content: '*';
-                color: var(--danger);
-                margin-left: 4px;
-            }
-
-            .form-control {
-                width: 100%;
-                padding: 12px 16px;
-                border: 2px solid var(--border);
-                border-radius: 8px;
-                font-size: 14px;
-                transition: border-color 0.2s ease;
-                background: white;
-            }
-
-            .form-control:focus {
-                outline: none;
-                border-color: var(--primary);
-                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            }
-
-            .form-control.error {
-                border-color: var(--danger);
-            }
-
-            .form-help {
-                font-size: 12px;
-                color: var(--text-light);
-                margin-top: 4px;
-            }
-
-            .form-error {
-                font-size: 12px;
-                color: var(--danger);
-                margin-top: 4px;
-            }
-
-            textarea.form-control {
-                min-height: 100px;
-                resize: vertical;
-            }
-
-            /* Stats Cards */
-            .stats-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 20px;
-                margin-bottom: 30px;
-            }
-
-            .stat-card {
-                background: white;
-                border-radius: 12px;
-                padding: 24px;
-                border: 1px solid var(--border);
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-
-            .stat-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 16px;
-            }
-
-            .stat-title {
-                color: var(--text-light);
-                font-size: 14px;
-                font-weight: 500;
-            }
-
-            .stat-icon {
-                width: 40px;
-                height: 40px;
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 18px;
-                color: white;
-            }
-
-            .stat-icon.pages {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-
-            .stat-icon.media {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            }
-
-            .stat-icon.visitors {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            }
-
-            .stat-icon.performance {
-                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            }
-
-            .stat-value {
-                font-size: 32px;
-                font-weight: 700;
-                color: var(--dark);
-                line-height: 1;
-            }
-
-            /* File Upload */
-            .file-upload {
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 40px 20px;
-                border: 2px dashed var(--border);
-                border-radius: 8px;
-                background: #fafbfc;
-                transition: all 0.2s ease;
-                cursor: pointer;
-            }
-
-            .file-upload:hover {
-                border-color: var(--primary);
-                background: rgba(102, 126, 234, 0.02);
-            }
-
-            .file-upload.dragover {
-                border-color: var(--primary);
-                background: rgba(102, 126, 234, 0.05);
-            }
-
-            .file-upload input {
-                position: absolute;
-                inset: 0;
-                opacity: 0;
-                cursor: pointer;
-            }
-
-            .file-upload-icon {
-                font-size: 48px;
-                color: var(--text-light);
-                margin-bottom: 16px;
-            }
-
-            .file-upload-text {
-                font-size: 16px;
-                font-weight: 500;
-                margin-bottom: 8px;
-            }
-
-            .file-upload-help {
-                font-size: 14px;
-                color: var(--text-light);
-            }
-
-            /* Media Gallery */
-            .media-gallery {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 15px;
-            }
-
-            .media-item {
-                position: relative;
-                aspect-ratio: 1;
-                border-radius: 8px;
-                overflow: hidden;
-                cursor: pointer;
-                border: 2px solid transparent;
-                transition: all 0.2s ease;
-            }
-
-            .media-item:hover {
-                transform: scale(1.02);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            }
-
-            .media-item.selected {
-                border-color: var(--primary);
-            }
-
-            .media-item img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .media-item-overlay {
-                position: absolute;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                opacity: 0;
-                transition: opacity 0.2s ease;
-            }
-
-            .media-item:hover .media-item-overlay {
-                opacity: 1;
-            }
-
-            .media-item-actions {
-                display: flex;
-                gap: 8px;
-            }
-
-            .media-action {
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                background: white;
-                border: none;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: var(--text);
-                transition: all 0.2s;
-            }
-
-            .media-action:hover {
-                background: var(--primary);
-                color: white;
-            }
-
-            /* Modal */
-            .modal {
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.2s ease;
-            }
-
-            .modal.show {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            .modal-content {
-                background: white;
-                border-radius: 12px;
-                width: 90%;
-                max-width: 600px;
-                max-height: 80vh;
-                overflow: hidden;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            }
-
-            .modal-header {
-                padding: 20px 24px;
-                border-bottom: 1px solid var(--border);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .modal-title {
-                font-size: 18px;
-                font-weight: 600;
-                color: var(--dark);
-            }
-
-            .modal-close {
-                background: none;
-                border: none;
-                font-size: 24px;
-                color: var(--text-light);
-                cursor: pointer;
-                padding: 4px;
-                border-radius: 4px;
-                transition: color 0.2s;
-            }
-
-            .modal-close:hover {
-                color: var(--text);
-            }
-
-            .modal-body {
-                padding: 24px;
-                overflow-y: auto;
-                max-height: 60vh;
-            }
-
-            .modal-footer {
-                padding: 20px 24px;
-                border-top: 1px solid var(--border);
-                background: #fafbfc;
-                display: flex;
-                justify-content: flex-end;
-                gap: 10px;
-            }
-
-            /* Color Input */
-            .color-input-group {
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            }
-
-            .color-preview {
-                width: 40px;
-                height: 40px;
-                border-radius: 6px;
-                border: 2px solid var(--border);
-                cursor: pointer;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .color-preview input[type="color"] {
-                position: absolute;
-                inset: 0;
-                opacity: 0;
-                cursor: pointer;
-            }
-
-            /* Image Selector */
-            .image-selector {
-                position: relative;
-            }
-
-            .image-preview {
-                width: 100%;
-                height: 200px;
-                border: 2px dashed var(--border);
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: border-color 0.2s;
-                object-fit: cover;
-            }
-
-            .image-preview:hover {
-                border-color: var(--primary);
-            }
-
-            .image-preview.empty {
-                background: #fafbfc;
-                color: var(--text-light);
-                font-size: 48px;
-            }
-
-            .image-preview.small {
-                width: 80px;
-                height: 60px;
-            }
-
-            .image-selector.small {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
-
-            /* Notification */
-            .notification {
-                position: fixed;
-                top: 90px;
-                right: 30px;
-                padding: 16px 20px;
-                border-radius: 8px;
-                color: white;
-                font-weight: 500;
-                z-index: 1001;
-                transform: translateX(100%);
-                transition: transform 0.3s ease;
-                min-width: 300px;
-            }
-
-            .notification.show {
-                transform: translateX(0);
-            }
-
-            .notification.success {
-                background: var(--success);
-            }
-
-            .notification.error {
-                background: var(--danger);
-            }
-
-            .notification.warning {
-                background: var(--warning);
-            }
-
-            .notification.info {
-                background: var(--info);
-            }
-
-            /* Loading */
-            .loading {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .loading-spinner {
-                width: 16px;
-                height: 16px;
-                border: 2px solid rgba(255, 255, 255, 0.3);
-                border-top-color: white;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-
-            @keyframes spin {
-                to {
-                    transform: rotate(360deg);
-                }
-            }
-
-            /* Responsive */
-            @media (max-width: 768px) {
-                .sidebar {
-                    transform: translateX(-100%);
-                }
-
-                .sidebar.show {
-                    transform: translateX(0);
-                }
-
-                .main-content {
-                    margin-left: 0;
-                }
-
-                .content {
-                    padding: 20px;
-                }
-
-                .form-grid.cols-2,
-                .form-grid.cols-3 {
-                    grid-template-columns: 1fr;
-                }
-
-                .stats-grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .tabs-header {
-                    flex-wrap: wrap;
-                }
-            }
-
-            /* Empty States */
-            .empty-state {
-                text-align: center;
-                padding: 60px 20px;
-                color: var(--text-light);
-            }
-
-            .empty-state i {
-                font-size: 64px;
-                margin-bottom: 20px;
-                opacity: 0.5;
-            }
-
-            .empty-state h3 {
-                font-size: 18px;
-                margin-bottom: 8px;
-                color: var(--text);
-            }
-
-            .empty-state p {
-                margin-bottom: 24px;
-            }
-        </style>
-    </head>
-
-    <body>
-        <div id="app">
-            <!-- Sidebar -->
-            <div class="sidebar" :class="{ collapsed: sidebarCollapsed }">
-                <div class="sidebar-header">
-                    <div class="sidebar-title">PG Admin</div>
-                    <div class="sidebar-subtitle">Content Management</div>
+<head>
+    <meta charset="utf-8" />
+    <title>Petroleum & Gas Complete CMS Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Arial', sans-serif; background: #f5f5f5; }
+
+        .admin-header { background: #2c3e50; color: white; padding: 15px 20px; }
+        .admin-header h1 { color: #FFD200; margin-bottom: 5px; }
+        .admin-header p { color: #bdc3c7; }
+
+        .admin-container { display: flex; min-height: calc(100vh - 70px); }
+
+        .sidebar { width: 280px; background: white; border-right: 1px solid #ddd; padding: 15px; overflow-y: auto; }
+        .tab-nav { list-style: none; }
+        .nav-section { margin-bottom: 20px; }
+        .nav-section-title { font-weight: bold; color: #333; margin-bottom: 10px; font-size: 12px; text-transform: uppercase; }
+        .tab-nav li { margin-bottom: 3px; }
+        .tab-btn {
+            display: block; width: 100%; padding: 10px 12px; background: #f8f9fa;
+            border: none; border-radius: 4px; cursor: pointer; text-align: left;
+            transition: all 0.3s; font-size: 14px;
+        }
+        .tab-btn:hover { background: #e9ecef; }
+        .tab-btn.active { background: #FFD200; color: #333; font-weight: bold; }
+        .tab-btn i { margin-right: 8px; }
+
+        .content-area { flex: 1; padding: 20px; overflow-y: auto; }
+        .content-panel { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .content-panel.hidden { display: none; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        .form-input, .form-textarea, .form-select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .form-textarea { height: 100px; resize: vertical; }
+        .form-select { height: 40px; }
+        .form-checkbox { margin-right: 5px; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px; }
+        .btn-primary { background: #FFD200; color: #333; }
+        .btn-primary:hover { background: #e6bd00; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+
+        .item-container { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; background: #f9f9f9; }
+        .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .item-title { font-weight: bold; }
+
+        .colors-preview { display: flex; gap: 10px; margin: 10px 0; }
+        .color-preview { width: 50px; height: 30px; border: 1px solid #ddd; border-radius: 4px; }
+
+        .notification {
+            position: fixed; top: 20px; right: 20px; padding: 15px 20px;
+            border-radius: 5px; z-index: 1000; opacity: 0; transition: opacity 0.3s;
+        }
+        .notification.show { opacity: 1; }
+        .notification.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .notification.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .template-match-note {
+            background: linear-gradient(135deg, #FFD200 0%, #484939 100%);
+            color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px;
+        }
+        .template-match-note h3 { margin-bottom: 10px; }
+
+        .preview-section {
+            border: 2px solid #FFD200; background: #fff; padding: 20px; margin: 15px 0; border-radius: 8px;
+        }
+
+        .dropdown-item { margin-left: 20px; padding: 8px; background: #f0f0f0; margin-bottom: 10px; border-radius: 4px; }
+        .dropdown-controls { margin-top: 10px; }
+
+        .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .media-item { border: 1px solid #ddd; padding: 10px; text-align: center; border-radius: 4px; cursor: pointer; }
+        .media-item:hover { background: #f0f0f0; }
+        .media-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; }
+
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .toggle-input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .toggle-input:checked + .toggle-slider { background-color: #FFD200; }
+        .toggle-input:checked + .toggle-slider:before { transform: translateX(26px); }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="admin-header">
+            <h1><i class="fas fa-oil-well"></i> Petroleum & Gas Complete CMS</h1>
+            <p>Full Website Management System - Control Everything</p>
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="!content" style="text-align: center; padding: 50px;">
+            <h2>Loading Petroleum & Gas CMS...</h2>
+            <p>Please wait while the admin interface initializes.</p>
+        </div>
+
+        <div v-if="content" class="admin-container">
+            <div class="sidebar">
+                <div class="nav-section">
+                    <div class="nav-section-title">Site Basics</div>
+                    <ul class="tab-nav">
+                        <li><button :class="['tab-btn', { active: activeTab === 'site-settings' }]" @click="activeTab = 'site-settings'">
+                            <i class="fas fa-cog"></i> Site Settings
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'favicon' }]" @click="activeTab = 'favicon'">
+                            <i class="fas fa-star"></i> Favicon & Title
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'seo' }]" @click="activeTab = 'seo'">
+                            <i class="fas fa-search"></i> SEO Settings
+                        </button></li>
+                    </ul>
                 </div>
 
-                <nav class="sidebar-nav">
-                    <div class="nav-section">
-                        <div class="nav-section-title">Main</div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'dashboard' }"
-                                @click="activeTab = 'dashboard'">
-                                <i class="nav-icon fas fa-home"></i>
-                                Dashboard
-                            </div>
-                        </div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'homepage' }"
-                                @click="activeTab = 'homepage'">
-                                <i class="nav-icon fas fa-home"></i>
-                                Homepage
-                            </div>
-                        </div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'pages' }"
-                                @click="activeTab = 'pages'">
-                                <i class="nav-icon fas fa-file-alt"></i>
-                                Pages
-                                <span class="nav-badge" v-if="pages.length">{{ pages.length }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="nav-section">
-                        <div class="nav-section-title">Content</div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'media' }"
-                                @click="activeTab = 'media'">
-                                <i class="nav-icon fas fa-images"></i>
-                                Media Library
-                                <span class="nav-badge" v-if="mediaLibrary.length">{{ mediaLibrary.length }}</span>
-                            </div>
-                        </div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'navigation' }"
-                                @click="activeTab = 'navigation'">
-                                <i class="nav-icon fas fa-bars"></i>
-                                Navigation
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="nav-section">
-                        <div class="nav-section-title">Appearance</div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'themes' }"
-                                @click="activeTab = 'themes'">
-                                <i class="nav-icon fas fa-paint-brush"></i>
-                                Theme Settings
-                            </div>
-                        </div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'widgets' }"
-                                @click="activeTab = 'widgets'">
-                                <i class="nav-icon fas fa-th-large"></i>
-                                Widgets
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="nav-section">
-                        <div class="nav-section-title">Settings</div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'settings' }"
-                                @click="activeTab = 'settings'">
-                                <i class="nav-icon fas fa-cog"></i>
-                                General
-                            </div>
-                        </div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'seo' }" @click="activeTab = 'seo'">
-                                <i class="nav-icon fas fa-search"></i>
-                                SEO Settings
-                            </div>
-                        </div>
-                        <div class="nav-item">
-                            <div class="nav-link" :class="{ active: activeTab === 'backup' }"
-                                @click="activeTab = 'backup'">
-                                <i class="nav-icon fas fa-download"></i>
-                                Backup & Export
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-
-            <!-- Main Content -->
-            <div class="main-content" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
-                <!-- Header -->
-                <div class="header">
-                    <div class="header-left">
-                        <button class="sidebar-toggle" @click="toggleSidebar">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="breadcrumb">
-                            <span class="breadcrumb-item">Admin</span>
-                            <span class="breadcrumb-item">/</span>
-                            <span class="breadcrumb-item active">{{ getTabTitle(activeTab) }}</span>
-                        </div>
-                    </div>
-
-                    <div class="header-right">
-                        <div class="header-actions">
-                            <button class="btn btn-secondary" @click="previewSite">
-                                <i class="fas fa-eye"></i>
-                                Preview
-                            </button>
-                            <button class="btn btn-primary" @click="saveContent" :disabled="saving">
-                                <div v-if="saving" class="loading">
-                                    <div class="loading-spinner"></div>
-                                    Saving...
-                                </div>
-                                <div v-else class="loading">
-                                    <i class="fas fa-save"></i>
-                                    Save Changes
-                                </div>
-                            </button>
-                        </div>
-                    </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Navigation</div>
+                    <ul class="tab-nav">
+                        <li><button :class="['tab-btn', { active: activeTab === 'navbar' }]" @click="activeTab = 'navbar'">
+                            <i class="fas fa-bars"></i> Navbar Settings
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'menu' }]" @click="activeTab = 'menu'">
+                            <i class="fas fa-list"></i> Menu Items
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'dropdown' }]" @click="activeTab = 'dropdown'">
+                            <i class="fas fa-angle-down"></i> Dropdown Menus
+                        </button></li>
+                    </ul>
                 </div>
 
-                <!-- Content Area -->
-                <div class="content">
-                    <!-- Dashboard Tab -->
-                    <div v-show="activeTab === 'dashboard'">
-                        <div class="content-header">
-                            <h1 class="content-title">Dashboard</h1>
-                            <p class="content-subtitle">Overview of your website statistics and recent activity</p>
-                        </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Content</div>
+                    <ul class="tab-nav">
+                        <li><button :class="['tab-btn', { active: activeTab === 'hero' }]" @click="activeTab = 'hero'">
+                            <i class="fas fa-image"></i> Hero Slider
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'services' }]" @click="activeTab = 'services'">
+                            <i class="fas fa-cogs"></i> Services
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'about' }]" @click="activeTab = 'about'">
+                            <i class="fas fa-leaf"></i> About Section
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'features' }]" @click="activeTab = 'features'">
+                            <i class="fas fa-star"></i> Features
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'projects' }]" @click="activeTab = 'projects'">
+                            <i class="fas fa-briefcase"></i> Projects
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'news' }]" @click="activeTab = 'news'">
+                            <i class="fas fa-newspaper"></i> News
+                        </button></li>
+                    </ul>
+                </div>
 
-                        <!-- Stats Cards -->
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-header">
-                                    <span class="stat-title">Pages</span>
-                                    <div class="stat-icon pages">
-                                        <i class="fas fa-file-alt"></i>
-                                    </div>
-                                </div>
-                                <div class="stat-value">{{ stats.pages }}</div>
-                            </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Layout</div>
+                    <ul class="tab-nav">
+                        <li><button :class="['tab-btn', { active: activeTab === 'footer' }]" @click="activeTab = 'footer'">
+                            <i class="fas fa-layer-group"></i> Footer
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'layout' }]" @click="activeTab = 'layout'">
+                            <i class="fas fa-th-large"></i> Page Layout
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'components' }]" @click="activeTab = 'components'">
+                            <i class="fas fa-puzzle-piece"></i> Components
+                        </button></li>
+                    </ul>
+                </div>
 
-                            <div class="stat-card">
-                                <div class="stat-header">
-                                    <span class="stat-title">Media Files</span>
-                                    <div class="stat-icon media">
-                                        <i class="fas fa-images"></i>
-                                    </div>
-                                </div>
-                                <div class="stat-value">{{ stats.media }}</div>
-                            </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Design</div>
+                    <ul class="tab-nav">
+                        <li><button :class="['tab-btn', { active: activeTab === 'branding' }]" @click="activeTab = 'branding'">
+                            <i class="fas fa-palette"></i> Colors & Fonts
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'media' }]" @click="activeTab = 'media'">
+                            <i class="fas fa-photo-video"></i> Media Library
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'social' }]" @click="activeTab = 'social'">
+                            <i class="fas fa-share-alt"></i> Social Media
+                        </button></li>
+                    </ul>
+                </div>
 
-                            <div class="stat-card">
-                                <div class="stat-header">
-                                    <span class="stat-title">Monthly Visitors</span>
-                                    <div class="stat-icon visitors">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                </div>
-                                <div class="stat-value">{{ stats.visitors }}</div>
-                            </div>
-
-                            <div class="stat-card">
-                                <div class="stat-header">
-                                    <span class="stat-title">Performance</span>
-                                    <div class="stat-icon performance">
-                                        <i class="fas fa-chart-line"></i>
-                                    </div>
-                                </div>
-                                <div class="stat-value">{{ stats.performance }}</div>
-                            </div>
-                        </div>
-
-                        <!-- Quick Actions -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Quick Actions</h3>
-                                <p class="card-subtitle">Common tasks you might want to perform</p>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-grid cols-3">
-                                    <button class="btn btn-primary" @click="activeTab = 'homepage'">
-                                        <i class="fas fa-edit"></i>
-                                        Edit Homepage
-                                    </button>
-                                    <button class="btn btn-secondary" @click="activeTab = 'media'">
-                                        <i class="fas fa-upload"></i>
-                                        Upload Media
-                                    </button>
-                                    <button class="btn btn-secondary"
-                                        @click="activeTab = 'pages'; showPageModal = true">
-                                        <i class="fas fa-plus"></i>
-                                        Create Page
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Homepage Tab -->
-                    <div v-show="activeTab === 'homepage'">
-                        <div class="content-header">
-                            <h1 class="content-title">Homepage Management</h1>
-                            <p class="content-subtitle">Customize your homepage sections and content</p>
-                        </div>
-
-                        <div class="tabs">
-                            <div class="tabs-header">
-                                <button class="tab-button" :class="{ active: homepageTab === 'hero' }"
-                                    @click="homepageTab = 'hero'">
-                                    <i class="fas fa-image"></i>
-                                    Hero Section
-                                </button>
-                                <button class="tab-button" :class="{ active: homepageTab === 'services' }"
-                                    @click="homepageTab = 'services'">
-                                    <i class="fas fa-cogs"></i>
-                                    Services
-                                </button>
-                                <button class="tab-button" :class="{ active: homepageTab === 'about' }"
-                                    @click="homepageTab = 'about'">
-                                    <i class="fas fa-info-circle"></i>
-                                    About Section
-                                </button>
-                                <button class="tab-button" :class="{ active: homepageTab === 'features' }"
-                                    @click="homepageTab = 'features'">
-                                    <i class="fas fa-star"></i>
-                                    Features
-                                </button>
-                                <button class="tab-button" :class="{ active: homepageTab === 'news' }"
-                                    @click="homepageTab = 'news'">
-                                    <i class="fas fa-newspaper"></i>
-                                    Latest News
-                                </button>
-                                <button class="tab-button" :class="{ active: homepageTab === 'quote' }"
-                                    @click="homepageTab = 'quote'">
-                                    <i class="fas fa-quote-right"></i>
-                                    Quote Section
-                                </button>
-                                <button class="tab-button" :class="{ active: homepageTab === 'projects' }"
-                                    @click="homepageTab = 'projects'">
-                                    <i class="fas fa-briefcase"></i>
-                                    Projects
-                                </button>
-                                <button class="tab-button" :class="{ active: homepageTab === 'newsletter' }"
-                                    @click="homepageTab = 'newsletter'">
-                                    <i class="fas fa-envelope"></i>
-                                    Newsletter
-                                </button>
-                                <button class="tab-button" :class="{ active: homepageTab === 'navbar' }"
-                                    @click="homepageTab = 'navbar'">
-                                    <i class="fas fa-bars"></i>
-                                    Navbar & Menu
-                                </button>
-                            </div>
-
-                            <!-- Hero Section Tab -->
-                            <div class="tab-content" :class="{ active: homepageTab === 'hero' }">
-                                <h3>Hero Slider Management</h3>
-                                <p class="form-help">Manage your homepage hero slides</p>
-
-                                <div v-for="(slide, index) in content?.hero?.slides || []" :key="index" class="card"
-                                    style="margin-bottom: 20px;">
-                                    <div class="card-header">
-                                        <h4 class="card-title">Slide {{ index + 1 }}</h4>
-                                        <button class="btn btn-danger btn-sm" @click="removeHeroSlide(index)">
-                                            <i class="fas fa-trash"></i>
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-grid cols-2">
-                                            <div class="form-group">
-                                                <label class="form-label">Title</label>
-                                                <input type="text" class="form-control" v-model="slide.title"
-                                                    placeholder="Slide title">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Subtitle</label>
-                                                <input type="text" class="form-control" v-model="slide.subtitle"
-                                                    placeholder="Slide subtitle">
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label">Background Image</label>
-                                            <div class="image-selector">
-                                                <img v-if="slide.image" :src="slide.image" class="image-preview"
-                                                    @click="selectImageForSlide(index)">
-                                                <div v-else class="image-preview empty"
-                                                    @click="selectImageForSlide(index)">
-                                                    <i class="fas fa-image"></i>
-                                                </div>
-                                                <div>
-                                                    <button class="btn btn-secondary btn-sm"
-                                                        @click="selectImageForSlide(index)">
-                                                        <i class="fas fa-folder-open"></i>
-                                                        Select Image
-                                                    </button>
-                                                    <p class="form-help">Recommended size: 1920x1080px</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label">Action Buttons</label>
-                                            <div v-for="(button, btnIndex) in slide.buttons || []" :key="btnIndex"
-                                                class="form-grid cols-3" style="margin-bottom: 10px;">
-                                                <input type="text" class="form-control" v-model="button.text"
-                                                    placeholder="Button text">
-                                                <input type="text" class="form-control" v-model="button.url"
-                                                    placeholder="Button URL">
-                                                <select class="form-control" v-model="button.type">
-                                                    <option value="primary">Primary</option>
-                                                    <option value="secondary">Secondary</option>
-                                                </select>
-                                            </div>
-                                            <button class="btn btn-secondary btn-sm" @click="addButtonToSlide(index)">
-                                                <i class="fas fa-plus"></i>
-                                                Add Button
-                                            </button>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label">Text Colors</label>
-                                            <div class="form-grid cols-2">
-                                                <div>
-                                                    <label class="form-label-small">Title Color</label>
-                                                    <select class="form-control" v-model="slide.titleColor">
-                                                        <option value="primary">Primary Color</option>
-                                                        <option value="secondary">Secondary Color</option>
-                                                        <option value="tertiary">Tertiary Color</option>
-                                                        <option value="white">White</option>
-                                                        <option value="black">Black</option>
-                                                        <option value="custom">Custom</option>
-                                                    </select>
-                                                    <input v-if="slide.titleColor === 'custom'" type="color"
-                                                        class="form-control" v-model="slide.titleColorCustom"
-                                                        style="margin-top: 5px;">
-                                                </div>
-                                                <div>
-                                                    <label class="form-label-small">Subtitle Color</label>
-                                                    <select class="form-control" v-model="slide.subtitleColor">
-                                                        <option value="primary">Primary Color</option>
-                                                        <option value="secondary">Secondary Color</option>
-                                                        <option value="tertiary">Tertiary Color</option>
-                                                        <option value="white">White</option>
-                                                        <option value="black">Black</option>
-                                                        <option value="custom">Custom</option>
-                                                    </select>
-                                                    <input v-if="slide.subtitleColor === 'custom'" type="color"
-                                                        class="form-control" v-model="slide.subtitleColorCustom"
-                                                        style="margin-top: 5px;">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button class="btn btn-primary" @click="addHeroSlide">
-                                    <i class="fas fa-plus"></i>
-                                    Add New Slide
-                                </button>
-                            </div>
-
-                            <!-- Services Tab -->
-                            <div class="tab-content" :class="{ active: homepageTab === 'services' }">
-                                <h3>Services Section</h3>
-                                <p class="form-help">Manage your services showcase</p>
-
-                                <div class="form-grid cols-2" style="margin-bottom: 30px;">
-                                    <div class="form-group">
-                                        <label class="form-label">Section Title</label>
-                                        <input type="text" class="form-control" v-model="content.services.sectionTitle"
-                                            placeholder="Our Services">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Section Subtitle</label>
-                                        <input type="text" class="form-control"
-                                            v-model="content.services.sectionSubtitle" placeholder="What we offer">
-                                    </div>
-                                </div>
-
-                                <div v-for="(service, index) in content?.services?.items || []" :key="index"
-                                    class="card" style="margin-bottom: 20px;">
-                                    <div class="card-header">
-                                        <h4 class="card-title">Service {{ index + 1 }}</h4>
-                                        <button class="btn btn-danger btn-sm" @click="removeService(index)">
-                                            <i class="fas fa-trash"></i>
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-grid cols-2">
-                                            <div class="form-group">
-                                                <label class="form-label">Service Title</label>
-                                                <input type="text" class="form-control" v-model="service.title"
-                                                    placeholder="Service name">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Service Icon/Image</label>
-                                                <div class="image-selector">
-                                                    <img v-if="service.image" :src="service.image" class="image-preview"
-                                                        @click="selectImageForService(index)">
-                                                    <div v-else class="image-preview empty"
-                                                        @click="selectImageForService(index)">
-                                                        <i class="fas fa-cog"></i>
-                                                    </div>
-                                                    <button class="btn btn-secondary btn-sm"
-                                                        @click="selectImageForService(index)">
-                                                        <i class="fas fa-folder-open"></i>
-                                                        Select Image
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Description</label>
-                                            <textarea class="form-control" v-model="service.description"
-                                                placeholder="Service description"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button class="btn btn-primary" @click="addService">
-                                    <i class="fas fa-plus"></i>
-                                    Add New Service
-                                </button>
-                            </div>
-
-                            <!-- About Tab Content -->
-                            <div class="tab-content" :class="{ active: homepageTab === 'about' }">
-                                <div class="form-grid cols-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Section Title</label>
-                                        <input type="text" class="form-control" v-model="content.about.title"
-                                            placeholder="About Us">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">About Image</label>
-                                        <div class="image-selector small">
-                                            <img v-if="content.about.image" :src="content.about.image"
-                                                class="image-preview small" @click="selectAboutImage">
-                                            <div v-else class="image-preview small empty" @click="selectAboutImage">
-                                                <i class="fas fa-image"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Description</label>
-                                    <textarea class="form-control" v-model="content.about.description" rows="6"
-                                        placeholder="About section description"></textarea>
-                                </div>
-                            </div>
-
-                            <!-- Features Tab Content -->
-                            <div class="tab-content" :class="{ active: homepageTab === 'features' }">
-                                <div class="form-grid cols-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Section Title</label>
-                                        <input type="text" class="form-control" v-model="content.features.title"
-                                            placeholder="Why Choose Us">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Section Subtitle</label>
-                                        <input type="text" class="form-control" v-model="content.features.subtitle"
-                                            placeholder="Our advantages">
-                                    </div>
-                                </div>
-
-                                <div v-for="(feature, index) in content.features.items" :key="index" class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title">Feature {{ index + 1 }}</h4>
-                                        <button type="button" @click="removeFeature(index)"
-                                            class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-grid cols-2">
-                                            <div class="form-group">
-                                                <label class="form-label">Feature Title</label>
-                                                <input type="text" class="form-control" v-model="feature.title"
-                                                    placeholder="Feature title">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Icon Class</label>
-                                                <input type="text" class="form-control" v-model="feature.icon"
-                                                    placeholder="fas fa-check">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Description</label>
-                                            <textarea class="form-control" v-model="feature.description" rows="2"
-                                                placeholder="Feature description"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="text-center">
-                                    <button type="button" @click="addFeature" class="btn btn-primary">
-                                        <i class="fas fa-plus"></i> Add Feature
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Projects Tab Content -->
-                            <div class="tab-content" :class="{ active: homepageTab === 'projects' }">
-                                <div class="form-grid cols-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Section Title</label>
-                                        <input type="text" class="form-control" v-model="content.projects.title"
-                                            placeholder="Latest Projects">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Section Subtitle</label>
-                                        <textarea class="form-control" v-model="content.projects.subtitle" rows="2"
-                                            placeholder="Describe your projects section"></textarea>
-                                    </div>
-                                </div>
-
-                                <div v-for="(project, index) in content.projects.items" :key="index" class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title">Project {{ index + 1 }}</h4>
-                                        <button type="button" @click="removeProject(index)"
-                                            class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-grid cols-2">
-                                            <div class="form-group">
-                                                <label class="form-label">Project Title</label>
-                                                <input type="text" class="form-control" v-model="project.title"
-                                                    placeholder="Project title">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Project Image</label>
-                                                <div class="image-selector small">
-                                                    <img v-if="project.image" :src="project.image"
-                                                        class="image-preview small" @click="selectProjectImage(index)">
-                                                    <div v-else class="image-preview small empty"
-                                                        @click="selectProjectImage(index)">
-                                                        <i class="fas fa-image"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Description</label>
-                                            <textarea class="form-control" v-model="project.description" rows="3"
-                                                placeholder="Project description"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="text-center">
-                                    <button type="button" @click="addProject" class="btn btn-primary">
-                                        <i class="fas fa-plus"></i> Add Project
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Pages Tab -->
-                    <div v-show="activeTab === 'pages'">
-                        <div class="content-header">
-                            <h1 class="content-title">Pages Management</h1>
-                            <p class="content-subtitle">Create and manage your website pages</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">All Pages</h3>
-                                <button class="btn btn-primary" @click="createNewPage">
-                                    <i class="fas fa-plus"></i> New Page
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div v-if="pages.length === 0" class="empty-state">
-                                    <i class="fas fa-file-alt"></i>
-                                    <h3>No Pages Yet</h3>
-                                    <p>Create your first page to get started</p>
-                                    <button class="btn btn-primary" @click="createNewPage">
-                                        <i class="fas fa-plus"></i> Create First Page
-                                    </button>
-                                </div>
-                                <div v-else>
-                                    <div v-for="page in pages" :key="page.id" class="card" style="margin-bottom: 15px;">
-                                        <div class="card-body" style="padding: 15px;">
-                                            <div
-                                                style="display: flex; justify-content: space-between; align-items: center;">
-                                                <div>
-                                                    <h5 style="margin: 0 0 5px 0;">{{ page.title }}</h5>
-                                                    <small class="text-muted">{{ page.slug }} • {{ page.status
-                                                        }}</small>
-                                                </div>
-                                                <div>
-                                                    <button class="btn btn-secondary btn-sm" @click="editPage(page)">
-                                                        <i class="fas fa-edit"></i> Edit
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm" @click="deletePage(page.id)">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Media Tab -->
-                    <div v-show="activeTab === 'media'">
-                        <div class="content-header">
-                            <h1 class="content-title">Media Library</h1>
-                            <p class="content-subtitle">Manage your images, videos, and other media files</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Upload Media</h3>
-                                <p class="card-subtitle">Drag and drop files or click to browse</p>
-                            </div>
-                            <div class="card-body">
-                                <div class="file-upload" @click="triggerFileUpload" @dragover.prevent
-                                    @drop="handleFileDrop">
-                                    <input type="file" ref="fileInput" @change="handleFileUpload"
-                                        accept="image/*,video/*" multiple style="display: none;">
-                                    <i class="file-upload-icon fas fa-cloud-upload-alt"></i>
-                                    <div class="file-upload-text">Upload Media Files</div>
-                                    <div class="file-upload-help">Support for images and videos up to 10MB each</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Media Gallery</h3>
-                                <div class="form-group" style="margin: 0; width: 250px;">
-                                    <input type="text" class="form-control" v-model="mediaSearch"
-                                        placeholder="Search media...">
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div v-if="filteredMedia.length === 0" class="empty-state">
-                                    <i class="fas fa-images"></i>
-                                    <h3>No Media Files</h3>
-                                    <p>Upload your first media file to get started</p>
-                                </div>
-                                <div v-else class="media-gallery">
-                                    <div v-for="media in filteredMedia" :key="media.id" class="media-item"
-                                        @click="selectMedia(media)">
-                                        <img :src="media.url" :alt="media.name">
-                                        <div class="media-item-overlay">
-                                            <div class="media-item-actions">
-                                                <button class="media-action" @click.stop="editMedia(media)"
-                                                    title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="media-action" @click.stop="deleteMedia(media.id)"
-                                                    title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Navigation Tab -->
-                    <div v-show="activeTab === 'navigation'">
-                        <div class="content-header">
-                            <h1 class="content-title">Navigation Management</h1>
-                            <p class="content-subtitle">Configure your website's navigation menu</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Menu Items</h3>
-                                <button class="btn btn-primary" @click="addMenuItem">
-                                    <i class="fas fa-plus"></i> Add Menu Item
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div v-if="content.navigation.length === 0" class="empty-state">
-                                    <i class="fas fa-bars"></i>
-                                    <h3>No Menu Items</h3>
-                                    <p>Add your first menu item to build navigation</p>
-                                    <button class="btn btn-primary" @click="addMenuItem">
-                                        <i class="fas fa-plus"></i> Add First Item
-                                    </button>
-                                </div>
-                                <div v-else>
-                                    <div v-for="(item, index) in content.navigation" :key="index" class="card"
-                                        style="margin-bottom: 15px;">
-                                        <div class="card-body">
-                                            <div class="form-grid cols-3">
-                                                <div class="form-group">
-                                                    <label class="form-label">Label</label>
-                                                    <input type="text" class="form-control" v-model="item.label"
-                                                        placeholder="Menu label">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-label">URL</label>
-                                                    <input type="text" class="form-control" v-model="item.url"
-                                                        placeholder="/page-url">
-                                                </div>
-                                                <div class="form-group" style="display: flex; align-items: flex-end;">
-                                                    <button class="btn btn-danger" @click="removeMenuItem(index)">
-                                                        <i class="fas fa-trash"></i> Remove
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Theme Settings Tab -->
-                    <div v-show="activeTab === 'themes'">
-                        <div class="content-header">
-                            <h1 class="content-title">Theme Settings</h1>
-                            <p class="content-subtitle">Customize your website's appearance and colors</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Color Scheme</h3>
-                                <p class="card-subtitle">Customize your brand colors</p>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-grid cols-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Primary Color</label>
-                                        <div class="color-input-group">
-                                            <div class="color-preview"
-                                                :style="{ backgroundColor: content.theme.primaryColor }"
-                                                @click="$refs.primaryColorInput.click()">
-                                                <input type="color" ref="primaryColorInput"
-                                                    v-model="content.theme.primaryColor">
-                                            </div>
-                                            <input type="text" class="form-control" v-model="content.theme.primaryColor"
-                                                placeholder="#667eea">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Secondary Color</label>
-                                        <div class="color-input-group">
-                                            <div class="color-preview"
-                                                :style="{ backgroundColor: content.theme.secondaryColor }"
-                                                @click="$refs.secondaryColorInput.click()">
-                                                <input type="color" ref="secondaryColorInput"
-                                                    v-model="content.theme.secondaryColor">
-                                            </div>
-                                            <input type="text" class="form-control"
-                                                v-model="content.theme.secondaryColor" placeholder="#f59e0b">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Text Color</label>
-                                        <div class="color-input-group">
-                                            <div class="color-preview"
-                                                :style="{ backgroundColor: content.theme.textColor }"
-                                                @click="$refs.textColorInput.click()">
-                                                <input type="color" ref="textColorInput"
-                                                    v-model="content.theme.textColor">
-                                            </div>
-                                            <input type="text" class="form-control" v-model="content.theme.textColor"
-                                                placeholder="#334155">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Background Color</label>
-                                        <div class="color-input-group">
-                                            <div class="color-preview"
-                                                :style="{ backgroundColor: content.theme.backgroundColor }"
-                                                @click="$refs.backgroundColorInput.click()">
-                                                <input type="color" ref="backgroundColorInput"
-                                                    v-model="content.theme.backgroundColor">
-                                            </div>
-                                            <input type="text" class="form-control"
-                                                v-model="content.theme.backgroundColor" placeholder="#ffffff">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Widgets Tab -->
-                    <div v-show="activeTab === 'widgets'">
-                        <div class="content-header">
-                            <h1 class="content-title">Widget Management</h1>
-                            <p class="content-subtitle">Manage sidebar and footer widgets</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Widget Areas</h3>
-                                <button class="btn btn-primary" @click="addWidgetArea">
-                                    <i class="fas fa-plus"></i> Add Widget Area
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div v-if="content.widgetAreas.length === 0" class="empty-state">
-                                    <i class="fas fa-th-large"></i>
-                                    <h3>No Widget Areas</h3>
-                                    <p>Create widget areas for your sidebar and footer</p>
-                                    <button class="btn btn-primary" @click="addWidgetArea">
-                                        <i class="fas fa-plus"></i> Create First Area
-                                    </button>
-                                </div>
-                                <div v-else>
-                                    <div v-for="(area, index) in content.widgetAreas" :key="index" class="card"
-                                        style="margin-bottom: 20px;">
-                                        <div class="card-header">
-                                            <h4 class="card-title">{{ area.name || 'Widget Area ' + (index + 1) }}</h4>
-                                            <button class="btn btn-danger btn-sm" @click="removeWidgetArea(index)">
-                                                <i class="fas fa-trash"></i> Remove
-                                            </button>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-group">
-                                                <label class="form-label">Area Name</label>
-                                                <input type="text" class="form-control" v-model="area.name"
-                                                    placeholder="Widget area name">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Location</label>
-                                                <select class="form-control" v-model="area.location">
-                                                    <option value="sidebar">Sidebar</option>
-                                                    <option value="footer">Footer</option>
-                                                    <option value="header">Header</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Settings Tab -->
-                    <div v-show="activeTab === 'settings'">
-                        <div class="content-header">
-                            <h1 class="content-title">General Settings</h1>
-                            <p class="content-subtitle">Configure your website's basic settings</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Site Information</h3>
-                                <p class="card-subtitle">Basic information about your website</p>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-grid cols-2">
-                                    <div class="form-group">
-                                        <label class="form-label required">Site Title</label>
-                                        <input type="text" class="form-control" v-model="content.settings.siteTitle"
-                                            placeholder="Your Site Title">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Tagline</label>
-                                        <input type="text" class="form-control" v-model="content.settings.tagline"
-                                            placeholder="Your site tagline">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Site Description</label>
-                                    <textarea class="form-control" v-model="content.settings.siteDescription" rows="3"
-                                        placeholder="Describe your website"></textarea>
-                                </div>
-                                <div class="form-grid cols-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Contact Email</label>
-                                        <input type="email" class="form-control" v-model="content.settings.contactEmail"
-                                            placeholder="contact@example.com">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Contact Phone</label>
-                                        <input type="tel" class="form-control" v-model="content.settings.contactPhone"
-                                            placeholder="+1 (555) 123-4567">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SEO Settings Tab -->
-                    <div v-show="activeTab === 'seo'">
-                        <div class="content-header">
-                            <h1 class="content-title">SEO Settings</h1>
-                            <p class="content-subtitle">Optimize your website for search engines</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Meta Information</h3>
-                                <p class="card-subtitle">Default meta tags for your website</p>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label class="form-label">Meta Description</label>
-                                    <textarea class="form-control" v-model="seoSettings.metaDescription" rows="3"
-                                        placeholder="A brief description of your website"></textarea>
-                                    <div class="form-help">Keep it under 160 characters for best results</div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Meta Keywords</label>
-                                    <input type="text" class="form-control" v-model="seoSettings.metaKeywords"
-                                        placeholder="keyword1, keyword2, keyword3">
-                                    <div class="form-help">Comma-separated list of keywords</div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Google Analytics ID</label>
-                                    <input type="text" class="form-control" v-model="seoSettings.googleAnalytics"
-                                        placeholder="GA-XXXXXXXXX-X">
-                                    <div class="form-help">Your Google Analytics tracking ID</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Backup & Export Tab -->
-                    <div v-show="activeTab === 'backup'">
-                        <div class="content-header">
-                            <h1 class="content-title">Backup & Export</h1>
-                            <p class="content-subtitle">Create backups and export your website data</p>
-                        </div>
-
-                        <div class="form-grid cols-2">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Export Content</h3>
-                                    <p class="card-subtitle">Download your content as JSON</p>
-                                </div>
-                                <div class="card-body">
-                                    <p>Export all your content including pages, media, and settings to a JSON file.</p>
-                                    <button class="btn btn-primary" @click="exportContent">
-                                        <i class="fas fa-download"></i> Export Content
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Backup Options</h3>
-                                    <p class="card-subtitle">Choose what to include</p>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" v-model="backupOptions.includeContent"> Include
-                                            Content
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" v-model="backupOptions.includeMedia"> Include Media
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" v-model="backupOptions.includeSettings"> Include
-                                            Settings
-                                        </label>
-                                    </div>
-                                    <button class="btn btn-success" @click="createBackup" :disabled="downloading">
-                                        <div v-if="downloading" class="loading">
-                                            <div class="loading-spinner"></div>
-                                            Creating...
-                                        </div>
-                                        <div v-else>
-                                            <i class="fas fa-save"></i> Create Backup
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Tools</div>
+                    <ul class="tab-nav">
+                        <li><button :class="['tab-btn', { active: activeTab === 'preview' }]" @click="activeTab = 'preview'">
+                            <i class="fas fa-eye"></i> Live Preview
+                        </button></li>
+                        <li><button :class="['tab-btn', { active: activeTab === 'backup' }]" @click="activeTab = 'backup'">
+                            <i class="fas fa-download"></i> Export/Backup
+                        </button></li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Media Selection Modal -->
-            <div class="modal" :class="{ show: showMediaModal }">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Select Media</h3>
-                        <button class="modal-close" @click="closeMediaModal">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <input type="text" class="form-control" v-model="mediaSearch"
-                                placeholder="Search media files...">
-                        </div>
-                        <div v-if="filteredMedia.length === 0" class="empty-state">
-                            <i class="fas fa-images"></i>
-                            <h3>No Media Files</h3>
-                            <p>Upload media files first</p>
-                        </div>
-                        <div v-else class="media-gallery">
-                            <div v-for="media in filteredMedia" :key="media.id" class="media-item"
-                                :class="{ selected: selectedMediaForSelection === media }"
-                                @click="selectedMediaForSelection = media">
-                                <img :src="media.url" :alt="media.name">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" @click="closeMediaModal">Cancel</button>
-                        <button class="btn btn-primary" @click="selectMediaForCallback"
-                            :disabled="!selectedMediaForSelection">
-                            Select Media
-                        </button>
-                    </div>
+            <div class="content-area">
+                <div class="template-match-note">
+                    <h3><i class="fas fa-magic"></i> Complete Website Control</h3>
+                    <p>Manage every aspect of your website - from favicon to footer, navbar dropdowns to social media integration.</p>
                 </div>
-            </div>
 
-            <!-- Page Modal -->
-            <div class="modal" :class="{ show: showPageModal }">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">{{ currentPageId ? 'Edit Page' : 'Create New Page' }}</h3>
-                        <button class="modal-close" @click="closePageModal">
-                            <i class="fas fa-times"></i>
-                        </button>
+                <!-- Site Settings Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'site-settings' }]">
+                    <h2><i class="fas fa-cog"></i> Site Settings</h2>
+
+                    <div class="form-group">
+                        <label>Site Title:</label>
+                        <input v-model="content.siteSettings.siteTitle" class="form-input" placeholder="Petroleum and Gas – Gas and Oil WordPress theme">
                     </div>
-                    <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>Site Tagline:</label>
+                        <input v-model="content.siteSettings.tagline" class="form-input" placeholder="Your site tagline">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Site Description:</label>
+                        <textarea v-model="content.siteSettings.description" class="form-textarea" placeholder="Describe your website..."></textarea>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label required">Page Title</label>
-                            <input type="text" class="form-control" v-model="editingPage.title"
-                                placeholder="Enter page title">
+                            <label>Language:</label>
+                            <select v-model="content.siteSettings.language" class="form-select">
+                                <option value="en-US">English (US)</option>
+                                <option value="en-GB">English (UK)</option>
+                                <option value="fr-FR">French</option>
+                                <option value="de-DE">German</option>
+                                <option value="es-ES">Spanish</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label required">Page Slug</label>
-                            <input type="text" class="form-control" v-model="editingPage.slug" placeholder="page-url">
-                            <div class="form-help">URL-friendly version of the title</div>
+                            <label>Timezone:</label>
+                            <select v-model="content.siteSettings.timezone" class="form-select">
+                                <option value="UTC">UTC</option>
+                                <option value="America/New_York">Eastern Time</option>
+                                <option value="America/Chicago">Central Time</option>
+                                <option value="America/Denver">Mountain Time</option>
+                                <option value="America/Los_Angeles">Pacific Time</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Site Settings</button>
+                </div>
+
+                <!-- Favicon & Title Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'favicon' }]">
+                    <h2><i class="fas fa-star"></i> Favicon & Browser Title</h2>
+
+                    <div class="form-group">
+                        <label>Favicon URL (16x16, 32x32, or ICO file):</label>
+                        <input v-model="content.siteSettings.faviconUrl" class="form-input" placeholder="https://example.com/favicon.ico">
+                        <small>Recommended: .ico file or 32x32 PNG</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Apple Touch Icon (180x180 PNG):</label>
+                        <input v-model="content.siteSettings.appleTouchIcon" class="form-input" placeholder="https://example.com/apple-touch-icon.png">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Browser Title Template:</label>
+                        <input v-model="content.siteSettings.titleTemplate" class="form-input" placeholder="&#123;&#123;page&#125;&#125; - &#123;&#123;site&#125;&#125;">
+                        <small>Use &#123;&#123;page&#125;&#125; for page name, &#123;&#123;site&#125;&#125; for site name</small>
+                    </div>
+
+                    <div class="preview-section">
+                        <h4>Preview:</h4>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img v-if="content.siteSettings.faviconUrl" :src="content.siteSettings.faviconUrl" style="width: 16px; height: 16px;">
+                            <div v-else style="width: 16px; height: 16px; background: #ddd; border-radius: 2px;"></div>
+                            <span>{{ content.siteSettings.siteTitle || 'Your Website Title' }}</span>
+                        </div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Favicon & Title</button>
+                </div>
+
+                <!-- Navbar Settings Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'navbar' }]" v-if="content && content.siteSettings && content.siteSettings.navbar">
+                    <h2><i class="fas fa-bars"></i> Navbar Settings</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Navbar Position:</label>
+                            <select v-model="content.siteSettings.navbar.position" class="form-select">
+                                <option value="fixed">Fixed Top</option>
+                                <option value="sticky">Sticky</option>
+                                <option value="static">Static</option>
+                                <option value="relative">Relative</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Meta Description</label>
-                            <textarea class="form-control" v-model="editingPage.metaDescription" rows="2"
-                                placeholder="Page meta description for SEO"></textarea>
+                            <label>Navbar Height (px):</label>
+                            <input v-model.number="content.siteSettings.navbar.height" type="number" class="form-input" min="50" max="150">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Background Color:</label>
+                            <input v-model="content.siteSettings.navbar.backgroundColor" type="color" class="form-input">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Page Content</label>
-                            <textarea class="form-control" v-model="editingPage.content" rows="8"
-                                placeholder="Enter page content..."></textarea>
+                            <label>Transparency (%):</label>
+                            <input v-model.number="content.siteSettings.navbar.transparency" type="range" min="0" max="100" class="form-input">
+                            <small>{{ content.siteSettings.navbar.transparency }}% transparent</small>
                         </div>
-                        <div class="form-grid cols-2">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Text Color:</label>
+                            <input v-model="content.siteSettings.navbar.textColor" type="color" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Hover Color:</label>
+                            <input v-model="content.siteSettings.navbar.hoverColor" type="color" class="form-input">
+                        </div>
+                    </div>
+
+                    <h3>Logo Settings</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Main Logo URL:</label>
+                            <input v-model="content.siteSettings.logo.logoMain" class="form-input" placeholder="Main logo image URL">
+                        </div>
+                        <div class="form-group">
+                            <label>Sticky Logo URL:</label>
+                            <input v-model="content.siteSettings.logo.logoTransparent" class="form-input" placeholder="Logo for sticky/scrolled navbar">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Logo Width (px):</label>
+                            <input v-model.number="content.siteSettings.logo.logoWidth" type="number" class="form-input" min="50" max="500">
+                        </div>
+                        <div class="form-group">
+                            <label>Logo Height (px):</label>
+                            <input v-model.number="content.siteSettings.logo.logoHeight" type="number" class="form-input" min="20" max="200">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Logo Alt Text:</label>
+                        <input v-model="content.siteSettings.logo.altText" class="form-input" placeholder="Logo description for accessibility">
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Navbar Settings</button>
+                </div>
+
+                <!-- Menu Items Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'menu' }]">
+                    <h2><i class="fas fa-list"></i> Navigation Menu</h2>
+
+                    <div v-for="(menuItem, index) in content.navigation.mainMenu" :key="index" class="item-container">
+                        <div class="item-header">
+                            <span class="item-title">Menu Item {{ index + 1 }}</span>
+                            <button @click="removeMenuItem(index)" class="btn btn-danger">Remove</button>
+                        </div>
+
+                        <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Status</label>
-                                <select class="form-control" v-model="editingPage.status">
-                                    <option value="draft">Draft</option>
-                                    <option value="published">Published</option>
-                                </select>
+                                <label>Menu Text:</label>
+                                <input v-model="menuItem.title" class="form-input" placeholder="Home, About, Services...">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Template</label>
-                                <select class="form-control" v-model="editingPage.template">
-                                    <option value="default">Default</option>
-                                    <option value="full-width">Full Width</option>
-                                    <option value="sidebar">With Sidebar</option>
-                                </select>
+                                <label>Link URL:</label>
+                                <input v-model="menuItem.url" class="form-input" placeholder="#home, /about, https://...">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Icon (Font Awesome):</label>
+                                <input v-model="menuItem.icon" class="form-input" placeholder="fas fa-home">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input v-model="menuItem.hasDropdown" type="checkbox" class="form-checkbox">
+                                    Has Dropdown Menu
+                                </label>
+                            </div>
+                        </div>
+
+                        <div v-if="menuItem.hasDropdown">
+                            <h4>Dropdown Items:</h4>
+                            <div v-for="(child, childIndex) in menuItem.children" :key="childIndex" class="dropdown-item">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input v-model="child.title" class="form-input" placeholder="Dropdown item text">
+                                    </div>
+                                    <div class="form-group">
+                                        <input v-model="child.url" class="form-input" placeholder="Dropdown item URL">
+                                    </div>
+                                    <button @click="removeDropdownItem(index, childIndex)" class="btn btn-danger">×</button>
+                                </div>
+                            </div>
+                            <div class="dropdown-controls">
+                                <button @click="addDropdownItem(index)" class="btn btn-secondary">Add Dropdown Item</button>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" @click="closePageModal">Cancel</button>
-                        <button class="btn btn-primary" @click="savePage">
-                            {{ currentPageId ? 'Update Page' : 'Create Page' }}
-                        </button>
+
+                    <button @click="addMenuItem" class="btn btn-success">Add Menu Item</button>
+                    <button @click="saveContent" class="btn btn-primary">Save Navigation Menu</button>
+                </div>
+
+                <!-- Dropdown Styling Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'dropdown' }]" v-if="content && content.siteSettings && content.siteSettings.navbar && content.siteSettings.navbar.dropdown">
+                    <h2><i class="fas fa-angle-down"></i> Dropdown Menu Styling</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dropdown Background:</label>
+                            <select v-model="content.siteSettings.navbar.dropdown.backgroundType" class="form-select">
+                                <option value="color">Solid Color</option>
+                                <option value="gradient">Gradient</option>
+                                <option value="image">Background Image</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Animation Style:</label>
+                            <select v-model="content.siteSettings.navbar.dropdown.animation" class="form-select">
+                                <option value="fade">Fade In</option>
+                                <option value="slide">Slide Down</option>
+                                <option value="bounce">Bounce</option>
+                                <option value="none">No Animation</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-if="content.siteSettings.navbar.dropdown.backgroundType === 'color'" class="form-group">
+                        <label>Dropdown Background Color:</label>
+                        <input v-model="content.siteSettings.navbar.dropdown.backgroundColor" type="color" class="form-input">
+                    </div>
+
+                    <div v-if="content.siteSettings.navbar.dropdown.backgroundType === 'image'" class="form-group">
+                        <label>Background Image URL:</label>
+                        <input v-model="content.siteSettings.navbar.dropdown.backgroundImage" class="form-input">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Text Color:</label>
+                            <input v-model="content.siteSettings.navbar.dropdown.textColor" type="color" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Hover Text Color:</label>
+                            <input v-model="content.siteSettings.navbar.dropdown.hoverTextColor" type="color" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Border Radius (px):</label>
+                            <input v-model.number="content.siteSettings.navbar.dropdown.borderRadius" type="number" class="form-input" min="0" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label>Shadow Intensity:</label>
+                            <select v-model="content.siteSettings.navbar.dropdown.shadow" class="form-select">
+                                <option value="none">No Shadow</option>
+                                <option value="light">Light Shadow</option>
+                                <option value="medium">Medium Shadow</option>
+                                <option value="heavy">Heavy Shadow</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Dropdown Styling</button>
+                </div>
+
+                <!-- Hero Slider Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'hero' }]">
+                    <h2><i class="fas fa-image"></i> Hero Slider Management</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <input v-model="content.hero.autoplay" type="checkbox" class="form-checkbox">
+                                Auto-play Slides
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Slide Duration (seconds):</label>
+                            <input v-model.number="content.hero.duration" type="number" class="form-input" min="1" max="30">
+                        </div>
+                    </div>
+
+                    <div v-for="(slide, index) in content.hero.slides" :key="index" class="item-container">
+                        <div class="item-header">
+                            <span class="item-title">Slide {{ index + 1 }}</span>
+                            <button @click="removeSlide(index)" class="btn btn-danger">Remove Slide</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Background Image URL:</label>
+                            <input v-model="slide.image" class="form-input" placeholder="Hero background image">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Subtitle (Yellow Text):</label>
+                                <input v-model="slide.subtitle" class="form-input" placeholder="NATURAL BEAUTY">
+                            </div>
+                            <div class="form-group">
+                                <label>Subtitle Color:</label>
+                                <input v-model="slide.subtitleColor" type="color" class="form-input" value="#FFD200">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Main Title:</label>
+                            <textarea v-model="slide.title" class="form-textarea" placeholder="Main hero title..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description Text:</label>
+                            <textarea v-model="slide.description" class="form-textarea" placeholder="Additional description..."></textarea>
+                        </div>
+
+                        <h4>Call-to-Action Buttons:</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Button 1 Text:</label>
+                                <input v-model="slide.button1Text" class="form-input" placeholder="READ MORE">
+                            </div>
+                            <div class="form-group">
+                                <label>Button 1 URL:</label>
+                                <input v-model="slide.button1Url" class="form-input" placeholder="#about">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Button 2 Text:</label>
+                                <input v-model="slide.button2Text" class="form-input" placeholder="GET QUOTE">
+                            </div>
+                            <div class="form-group">
+                                <label>Button 2 URL:</label>
+                                <input v-model="slide.button2Url" class="form-input" placeholder="#contact">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button @click="addSlide" class="btn btn-success">Add New Slide</button>
+                    <button @click="saveContent" class="btn btn-primary">Save Hero Slider</button>
+                </div>
+
+                <!-- Services Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'services' }]">
+                    <h2><i class="fas fa-cogs"></i> Services Management</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Section Title:</label>
+                            <input v-model="content.services.sectionTitle" class="form-input" placeholder="Our Core Services">
+                        </div>
+                        <div class="form-group">
+                            <label>Section Subtitle:</label>
+                            <input v-model="content.services.sectionSubtitle" class="form-input" placeholder="What we offer">
+                        </div>
+                    </div>
+
+                    <div v-for="(service, index) in content.services.items" :key="index" class="item-container">
+                        <div class="item-header">
+                            <span class="item-title">Service {{ index + 1 }}</span>
+                            <button @click="removeService(index)" class="btn btn-danger">Remove Service</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Service Icon/Image:</label>
+                                <input v-model="service.image" class="form-input" placeholder="Service icon URL">
+                            </div>
+                            <div class="form-group">
+                                <label>Service Title:</label>
+                                <input v-model="service.title" class="form-input" placeholder="OIL EXTRACTION">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Service Description:</label>
+                            <textarea v-model="service.description" class="form-textarea" placeholder="Service description..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Service URL (optional):</label>
+                            <input v-model="service.url" class="form-input" placeholder="Link to service page">
+                        </div>
+                    </div>
+
+                    <button @click="addService" class="btn btn-success">Add New Service</button>
+                    <button @click="saveContent" class="btn btn-primary">Save Services</button>
+                </div>
+
+                <!-- About Section Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'about' }]">
+                    <h2><i class="fas fa-leaf"></i> About Section</h2>
+
+                    <div class="form-group">
+                        <label>About Title:</label>
+                        <input v-model="content.aboutSection.title" class="form-input" placeholder="Save The Planet!">
+                    </div>
+
+                    <div class="form-group">
+                        <label>About Description:</label>
+                        <textarea v-model="content.aboutSection.description" class="form-textarea" placeholder="About section description..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>About Image URL:</label>
+                        <input v-model="content.aboutSection.image" class="form-input" placeholder="About section image">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Background Color:</label>
+                            <input v-model="content.aboutSection.backgroundColor" type="color" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Text Color:</label>
+                            <input v-model="content.aboutSection.textColor" type="color" class="form-input">
+                        </div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save About Section</button>
+                </div>
+
+                <!-- Features Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'features' }]" v-if="content && content.features">
+                    <h2><i class="fas fa-star"></i> Features Management</h2>
+
+                    <div class="form-group">
+                        <label>Section Title:</label>
+                        <input v-model="content.features.title" class="form-input" placeholder="Why Choose Us">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Section Subtitle:</label>
+                        <input v-model="content.features.subtitle" class="form-input" placeholder="Excellence in every aspect">
+                    </div>
+
+                    <h3>Feature Items</h3>
+                    <div v-for="(feature, index) in content.features.items" :key="index" class="item-container">
+                        <div class="item-header">
+                            <span class="item-title">Feature {{ index + 1 }}</span>
+                            <button @click="removeFeature(index)" class="btn btn-danger">Remove</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Feature Title:</label>
+                                <input v-model="feature.title" class="form-input" placeholder="Feature Title">
+                            </div>
+                            <div class="form-group">
+                                <label>Icon/Image URL:</label>
+                                <input v-model="feature.icon" class="form-input" placeholder="Icon URL">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea v-model="feature.description" class="form-textarea" placeholder="Feature description"></textarea>
+                        </div>
+                    </div>
+
+                    <button @click="addFeature" class="btn btn-success">Add Feature</button>
+                    <button @click="saveContent" class="btn btn-primary">Save Features</button>
+                </div>
+
+                <!-- Footer Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'footer' }]">
+                    <h2><i class="fas fa-layer-group"></i> Footer Management</h2>
+
+                    <div class="form-group">
+                        <label>Footer Description:</label>
+                        <textarea v-model="content.footer.description" class="form-textarea" placeholder="Company description for footer..."></textarea>
+                    </div>
+
+                    <h3>Contact Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone Number:</label>
+                            <input v-model="content.footer.contact.phone" class="form-input" placeholder="+1 (555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address:</label>
+                            <input v-model="content.footer.contact.email" class="form-input" placeholder="info@company.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Physical Address:</label>
+                        <textarea v-model="content.footer.contact.address" class="form-textarea" placeholder="123 Main St, City, State 12345"></textarea>
+                    </div>
+
+                    <h3>Footer Menu</h3>
+                    <div v-for="(item, index) in content.footer.menu" :key="index" class="item-container">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input v-model="item.title" class="form-input" placeholder="Footer menu item">
+                            </div>
+                            <div class="form-group">
+                                <input v-model="item.url" class="form-input" placeholder="URL">
+                            </div>
+                            <button @click="removeFooterMenuItem(index)" class="btn btn-danger">Remove</button>
+                        </div>
+                    </div>
+
+                    <button @click="addFooterMenuItem" class="btn btn-success">Add Footer Menu Item</button>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Copyright Text:</label>
+                        <input v-model="content.footer.copyrightText" class="form-input" placeholder="© 2025 Company Name. All rights reserved.">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Footer Background Color:</label>
+                            <input v-model="content.footer.backgroundColor" type="color" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Footer Text Color:</label>
+                            <input v-model="content.footer.textColor" type="color" class="form-input">
+                        </div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Footer</button>
+                </div>
+
+                <!-- Social Media Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'social' }]">
+                    <h2><i class="fas fa-share-alt"></i> Social Media</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Facebook URL:</label>
+                            <input v-model="content.socialMedia.facebook" class="form-input" placeholder="https://facebook.com/yourpage">
+                        </div>
+                        <div class="form-group">
+                            <label>Instagram URL:</label>
+                            <input v-model="content.socialMedia.instagram" class="form-input" placeholder="https://instagram.com/youraccount">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Twitter URL:</label>
+                            <input v-model="content.socialMedia.twitter" class="form-input" placeholder="https://twitter.com/youraccount">
+                        </div>
+                        <div class="form-group">
+                            <label>LinkedIn URL:</label>
+                            <input v-model="content.socialMedia.linkedin" class="form-input" placeholder="https://linkedin.com/company/yourcompany">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>YouTube URL:</label>
+                            <input v-model="content.socialMedia.youtube" class="form-input" placeholder="https://youtube.com/channel/yourchannel">
+                        </div>
+                        <div class="form-group">
+                            <label>Google+ URL:</label>
+                            <input v-model="content.socialMedia.googleplus" class="form-input" placeholder="https://plus.google.com/yourpage">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Social Media Display Location:</label>
+                        <div>
+                            <label><input v-model="content.socialMedia.showInHeader" type="checkbox" class="form-checkbox"> Show in Header</label>
+                            <label><input v-model="content.socialMedia.showInFooter" type="checkbox" class="form-checkbox"> Show in Footer</label>
+                        </div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Social Media</button>
+                </div>
+
+                <!-- SEO Settings Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'seo' }]">
+                    <h2><i class="fas fa-search"></i> SEO Settings</h2>
+
+                    <div class="form-group">
+                        <label>Meta Description:</label>
+                        <textarea v-model="content.seoSettings.metaDescription" class="form-textarea" placeholder="Site description for search engines..."></textarea>
+                        <small>Recommended: 150-160 characters</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Meta Keywords:</label>
+                        <input v-model="content.seoSettings.metaKeywords" class="form-input" placeholder="keyword1, keyword2, keyword3">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Google Analytics ID:</label>
+                            <input v-model="content.seoSettings.googleAnalytics" class="form-input" placeholder="GA-XXXXXXXXX-X">
+                        </div>
+                        <div class="form-group">
+                            <label>Google Search Console:</label>
+                            <input v-model="content.seoSettings.googleSearchConsole" class="form-input" placeholder="Verification code">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Facebook Pixel ID:</label>
+                        <input v-model="content.seoSettings.facebookPixel" class="form-input" placeholder="Facebook Pixel ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Custom Head Code:</label>
+                        <textarea v-model="content.seoSettings.customHeadCode" class="form-textarea" placeholder="Custom HTML for <head> section..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Custom Body Code:</label>
+                        <textarea v-model="content.seoSettings.customBodyCode" class="form-textarea" placeholder="Custom HTML for end of <body>..."></textarea>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save SEO Settings</button>
+                </div>
+
+                <!-- Colors & Branding Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'branding' }]">
+                    <h2><i class="fas fa-palette"></i> Colors & Branding</h2>
+
+                    <h3>Brand Colors</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Primary Color:</label>
+                            <input v-model="content.siteSettings.primaryColor" type="color" class="form-input">
+                            <small>Main brand color - used for buttons, highlights</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Secondary Color:</label>
+                            <input v-model="content.siteSettings.secondaryColor" type="color" class="form-input">
+                            <small>Secondary brand color - used for accents</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tertiary Color:</label>
+                        <input v-model="content.siteSettings.tertiaryColor" type="color" class="form-input">
+                        <small>Third brand color - used for additional elements</small>
+                    </div>
+
+                    <div v-if="content.siteSettings.typography">
+                        <h3>Typography</h3>
+                        <div class="form-row">
+                        <div class="form-group">
+                            <label>Header Font:</label>
+                            <select v-model="content.siteSettings.typography.headerFont" class="form-select">
+                                <option value="Montserrat">Montserrat (Default)</option>
+                                <option value="Arial">Arial</option>
+                                <option value="Helvetica">Helvetica</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Body Font:</label>
+                            <select v-model="content.siteSettings.typography.bodyFont" class="form-select">
+                                <option value="Open Sans">Open Sans (Default)</option>
+                                <option value="Arial">Arial</option>
+                                <option value="Helvetica">Helvetica</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Montserrat">Montserrat</option>
+                            </select>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="colors-preview">
+                        <div class="color-preview" :style="{ backgroundColor: content.siteSettings.primaryColor }" title="Primary Color"></div>
+                        <div class="color-preview" :style="{ backgroundColor: content.siteSettings.secondaryColor }" title="Secondary Color"></div>
+                        <div class="color-preview" :style="{ backgroundColor: content.siteSettings.tertiaryColor }" title="Tertiary Color"></div>
+                    </div>
+
+                    <button @click="saveContent" class="btn btn-primary">Save Colors & Branding</button>
+                </div>
+
+                <!-- Media Library Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'media' }]">
+                    <h2><i class="fas fa-photo-video"></i> Media Library</h2>
+
+                    <div style="margin-bottom: 20px;">
+                        <input type="file" @change="handleFileUpload" multiple accept="image/*" class="form-input">
+                        <button @click="uploadFiles" class="btn btn-primary" style="margin-left: 10px;">Upload Files</button>
+                    </div>
+
+                    <div class="media-grid">
+                        <div v-for="media in mediaLibrary" :key="media.id" class="media-item" @click="selectMedia(media)">
+                            <img :src="media.url" :alt="media.name">
+                            <div style="margin-top: 5px; font-size: 12px;">{{ media.name }}</div>
+                            <div style="font-size: 11px; color: #666;">{{ formatFileSize(media.size) }}</div>
+                        </div>
+                    </div>
+
+                    <div v-if="!mediaLibrary.length" style="text-align: center; padding: 40px; color: #666;">
+                        No media files uploaded yet. Upload some images to get started!
                     </div>
                 </div>
-            </div>
 
-            <!-- Notification -->
-            <div v-if="notification.show" class="notification"
-                :class="[notification.type, { show: notification.show }]">
-                {{ notification.message }}
+                <!-- Live Preview Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'preview' }]">
+                    <h2><i class="fas fa-eye"></i> Live Preview</h2>
+
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <button @click="openPreview" class="btn btn-primary">Open Website Preview</button>
+                        <button @click="refreshPreview" class="btn btn-secondary">Refresh Preview</button>
+                    </div>
+
+                    <div class="preview-section">
+                        <iframe src="/" width="100%" height="600" frameborder="0" style="border-radius: 8px;"></iframe>
+                    </div>
+                </div>
+
+                <!-- Export/Backup Panel -->
+                <div :class="['content-panel', { hidden: activeTab !== 'backup' }]">
+                    <h2><i class="fas fa-download"></i> Export & Backup</h2>
+
+                    <div class="form-group">
+                        <button @click="exportContent" class="btn btn-primary">Export All Content</button>
+                        <button @click="exportDatabase" class="btn btn-secondary">Export Database</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Import Content:</label>
+                        <input type="file" @change="handleImportFile" accept=".json" class="form-input">
+                        <button @click="importContent" class="btn btn-success" style="margin-top: 10px;">Import Content</button>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">
+                        <h4>Backup Status</h4>
+                        <p>Last backup: {{ lastBackupDate || 'Never' }}</p>
+                        <p>Content items: {{ Object.keys(content).length }}</p>
+                        <p>Database status: <span style="color: green;">Connected</span></p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <script>
-            const { createApp } = Vue;
+        <!-- Notification -->
+        <div v-if="notification.show" :class="['notification', notification.type, { show: notification.show }]">
+            {{ notification.message }}
+        </div>
+    </div>
 
-            createApp({
-                data() {
-                    return {
-                        activeTab: 'dashboard',
-                        homepageTab: 'hero',
-                        sidebarCollapsed: false,
-                        saving: false,
-                        downloading: false,
-                        content: {
-                            hero: {
-                                title: 'Welcome to Petroleum & Gas Solutions',
-                                subtitle: 'Leading provider of comprehensive petroleum and gas services worldwide',
-                                buttonText: 'Get Started',
-                                buttonLink: '#contact',
-                                backgroundImage: ''
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    activeTab: 'site-settings',
+                    selectedFiles: [],
+                    importFile: null,
+                    lastBackupDate: null,
+
+                    content: {
+                        siteSettings: {
+                            siteTitle: 'Petroleum and Gas – Gas and Oil WordPress theme',
+                            tagline: 'Professional Energy Solutions',
+                            description: 'Leading provider of oil and gas services',
+                            language: 'en-US',
+                            timezone: 'UTC',
+                            faviconUrl: '',
+                            appleTouchIcon: '',
+                            titleTemplate: '{{page}} - {{site}}',
+                            primaryColor: '#FFD200',
+                            secondaryColor: '#484939',
+                            tertiaryColor: '#1E3A8A',
+                            navbar: {
+                                position: 'fixed',
+                                height: 70,
+                                backgroundColor: '#ffffff',
+                                transparency: 0,
+                                textColor: '#333333',
+                                hoverColor: '#FFD200',
+                                dropdown: {
+                                    backgroundType: 'color',
+                                    backgroundColor: '#ffffff',
+                                    backgroundImage: '',
+                                    textColor: '#333333',
+                                    hoverTextColor: '#FFD200',
+                                    borderRadius: 4,
+                                    shadow: 'medium',
+                                    animation: 'fade'
+                                }
                             },
-                            services: {
-                                title: 'Our Services',
-                                subtitle: 'What we offer',
-                                items: []
+                            logo: {
+                                logoMain: '',
+                                logoTransparent: '',
+                                logoWidth: 150,
+                                logoHeight: 50,
+                                altText: 'Petroleum and Gas Logo'
                             },
-                            about: {
-                                title: 'About Us',
-                                description: '',
-                                image: ''
-                            },
-                            features: {
-                                title: 'Why Choose Us',
-                                subtitle: 'Our advantages',
-                                items: []
-                            },
-                            projects: {
-                                title: 'Latest Projects',
-                                subtitle: 'Explore our recent work',
-                                items: []
-                            },
-                            navigation: [],
-                            theme: {
-                                primaryColor: '#667eea',
-                                secondaryColor: '#f59e0b',
-                                textColor: '#334155',
-                                backgroundColor: '#ffffff'
-                            },
-                            widgetAreas: [],
-                            settings: {
-                                siteTitle: 'Petroleum & Gas Solutions',
-                                tagline: 'Your trusted energy partner',
-                                siteDescription: '',
-                                contactEmail: '',
-                                contactPhone: ''
+                            typography: {
+                                headerFont: 'Montserrat',
+                                bodyFont: 'Open Sans'
                             }
                         },
-                        pages: [],
-                        mediaLibrary: [],
-                        stats: {
-                            pages: 0,
-                            media: 0,
-                            visitors: '1.2K',
-                            performance: '98%'
+                        navigation: {
+                            mainMenu: [
+                                { title: 'Home', url: '#home', icon: 'fas fa-home', hasDropdown: false, children: [] },
+                                { title: 'About', url: '#about', icon: 'fas fa-info', hasDropdown: false, children: [] },
+                                { title: 'Services', url: '#services', icon: 'fas fa-cogs', hasDropdown: true, children: [
+                                    { title: 'Oil Extraction', url: '#oil-extraction' },
+                                    { title: 'Pipeline Building', url: '#pipeline' },
+                                    { title: 'Oil Refinement', url: '#refinement' }
+                                ]},
+                                { title: 'Contact', url: '#contact', icon: 'fas fa-phone', hasDropdown: false, children: [] }
+                            ]
+                        },
+                        hero: {
+                            autoplay: true,
+                            duration: 5,
+                            slides: [
+                                {
+                                    image: '',
+                                    subtitle: 'NATURAL BEAUTY',
+                                    subtitleColor: '#FFD200',
+                                    title: 'Overcoming technology challenges: making the most of resources',
+                                    description: 'We help hardware startups integrate technology, scale and desirability without compromise',
+                                    button1Text: 'READ MORE',
+                                    button1Url: '#about',
+                                    button2Text: 'GET QUOTE',
+                                    button2Url: '#contact'
+                                }
+                            ]
+                        },
+                        services: {
+                            sectionTitle: 'Our Core Services',
+                            sectionSubtitle: 'Comprehensive solutions across energy sectors',
+                            items: [
+                                {
+                                    image: '',
+                                    title: 'OIL EXTRACTION',
+                                    description: 'As the world\'s largest green and clean energy specialist of the printing and typesetting industry.',
+                                    url: '#oil-extraction'
+                                },
+                                {
+                                    image: '',
+                                    title: 'PIPELINES BUILDING',
+                                    description: 'Professional pipeline construction and maintenance services for safe energy transportation.',
+                                    url: '#pipelines'
+                                },
+                                {
+                                    image: '',
+                                    title: 'OIL REFINEMENT',
+                                    description: 'Advanced oil refinement processes using cutting-edge technology and environmental standards.',
+                                    url: '#refinement'
+                                }
+                            ]
+                        },
+                        aboutSection: {
+                            title: 'Save The Planet!',
+                            description: 'Sed posuere consectetur est at lobortis. Nullam id dolor id nibh ultricies vehicula ut id elit. Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis.',
+                            image: '',
+                            backgroundColor: '#484939',
+                            textColor: '#ffffff'
+                        },
+                        footer: {
+                            description: 'Petroleum is the leader in the country sed diam nonumy eirmod tempor invidunt ut labore and efficient strategy.',
+                            contact: {
+                                phone: '+1 (555) 123-4567',
+                                email: 'info@petroleum-gas.com',
+                                address: '123 Energy Drive, Oil City, TX 75001'
+                            },
+                            menu: [
+                                { title: 'About Us', url: '#about' },
+                                { title: 'Services', url: '#services' },
+                                { title: 'Contact', url: '#contact' },
+                                { title: 'Privacy Policy', url: '#privacy' }
+                            ],
+                            copyrightText: '© 2025 Petroleum & Gas. All rights reserved.',
+                            backgroundColor: '#2c3e50',
+                            textColor: '#ffffff'
+                        },
+                        socialMedia: {
+                            facebook: '',
+                            instagram: '',
+                            twitter: '',
+                            linkedin: '',
+                            youtube: '',
+                            googleplus: '',
+                            showInHeader: true,
+                            showInFooter: true
                         },
                         seoSettings: {
-                            metaDescription: '',
-                            metaKeywords: '',
-                            googleAnalytics: ''
-                        },
-                        backupOptions: {
-                            includeContent: true,
-                            includeMedia: false,
-                            includeSettings: true
-                        },
-                        showMediaModal: false,
-                        showPageModal: false,
-                        selectedMediaForSelection: null,
-                        mediaSelectionCallback: null,
-                        mediaSearch: '',
-                        currentPageId: null,
-                        editingPage: {
-                            title: '',
-                            slug: '',
-                            content: '',
-                            status: 'draft',
-                            template: 'default',
-                            metaDescription: ''
-                        },
-                        notification: {
-                            show: false,
-                            type: '',
-                            message: ''
-                        }
-                    };
-                },
-
-                computed: {
-                    filteredMedia() {
-                        if (!this.mediaSearch) return this.mediaLibrary;
-                        return this.mediaLibrary.filter(media =>
-                            media.name.toLowerCase().includes(this.mediaSearch.toLowerCase())
-                        );
-                    }
-                },
-
-                async mounted() {
-                    await this.loadContent();
-                    await this.loadPages();
-                    await this.loadMediaLibrary();
-                    await this.loadSEOSettings();
-                    this.updateStats();
-                },
-
-                methods: {
-                    toggleSidebar() {
-                        this.sidebarCollapsed = !this.sidebarCollapsed;
-                    },
-
-                    getTabTitle(tab) {
-                        const titles = {
-                            dashboard: 'Dashboard',
-                            homepage: 'Homepage',
-                            pages: 'Pages',
-                            media: 'Media Library',
-                            navigation: 'Navigation',
-                            themes: 'Theme Settings',
-                            widgets: 'Widgets',
-                            settings: 'General Settings',
-                            seo: 'SEO Settings',
-                            backup: 'Backup & Export'
-                        };
-                        return titles[tab] || tab;
-                    },
-
-                    async loadContent() {
-                        try {
-                            const response = await fetch('/api/content');
-                            if (response.ok) {
-                                const data = await response.json();
-                                this.content = { ...this.content, ...data };
-                            }
-                        } catch (error) {
-                            console.error('Error loading content:', error);
-                            this.showNotification('Error loading content: ' + error.message, 'error');
+                            metaDescription: 'Professional petroleum and gas services company providing oil extraction, pipeline building, and refinement solutions.',
+                            metaKeywords: 'petroleum, gas, oil, energy, extraction, pipeline, refinement',
+                            googleAnalytics: '',
+                            googleSearchConsole: '',
+                            facebookPixel: '',
+                            customHeadCode: '',
+                            customBodyCode: ''
                         }
                     },
 
-                    async loadPages() {
-                        try {
-                            const response = await fetch('/api/pages');
-                            if (response.ok) {
-                                this.pages = await response.json();
-                            }
-                        } catch (error) {
-                            console.error('Error loading pages:', error);
-                            this.pages = [];
-                        }
-                    },
-
-                    async loadMediaLibrary() {
-                        try {
-                            const response = await fetch('/api/media-library');
-                            if (response.ok) {
-                                this.mediaLibrary = await response.json();
-                            }
-                        } catch (error) {
-                            console.error('Error loading media library:', error);
-                            this.mediaLibrary = [];
-                        }
-                    },
-
-                    async loadSEOSettings() {
-                        try {
-                            const response = await fetch('/api/seo-settings');
-                            if (response.ok) {
-                                this.seoSettings = await response.json();
-                            }
-                        } catch (error) {
-                            console.error('Error loading SEO settings:', error);
-                        }
-                    },
-
-                    updateStats() {
-                        this.stats.pages = this.pages.length;
-                        this.stats.media = this.mediaLibrary.length;
-                    },
-
-                    async saveContent() {
-                        this.saving = true;
-                        try {
-                            const response = await fetch('/api/content', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(this.content)
-                            });
-
-                            if (response.ok) {
-                                this.showNotification('Content saved successfully!', 'success');
-                            } else {
-                                throw new Error('Failed to save content');
-                            }
-                        } catch (error) {
-                            console.error('Error saving content:', error);
-                            this.showNotification('Error saving content: ' + error.message, 'error');
-                        } finally {
-                            this.saving = false;
-                        }
-                    },
-
-                    previewSite() {
-                        window.open('/', '_blank');
-                    },
-
-                    // Hero Methods
-                    selectHeroImage() {
-                        this.openMediaModal((media) => {
-                            this.content.hero.backgroundImage = media.url;
-                        });
-                    },
-
-                    // Services Methods
-                    addService() {
-                        if (!this.content.services.items) this.content.services.items = [];
-                        this.content.services.items.push({
-                            title: '',
-                            description: '',
-                            icon: 'fas fa-cog'
-                        });
-                    },
-
-                    removeService(index) {
-                        this.content.services.items.splice(index, 1);
-                    },
-
-                    // About Methods
-                    selectAboutImage() {
-                        this.openMediaModal((media) => {
-                            this.content.about.image = media.url;
-                        });
-                    },
-
-                    // Features Methods
-                    addFeature() {
-                        if (!this.content.features.items) this.content.features.items = [];
-                        this.content.features.items.push({
-                            title: '',
-                            description: '',
-                            icon: 'fas fa-check'
-                        });
-                    },
-
-                    removeFeature(index) {
-                        this.content.features.items.splice(index, 1);
-                    },
-
-                    // Projects Methods
-                    addProject() {
-                        if (!this.content.projects.items) this.content.projects.items = [];
-                        this.content.projects.items.push({
-                            title: '',
-                            description: '',
-                            image: ''
-                        });
-                    },
-
-                    removeProject(index) {
-                        this.content.projects.items.splice(index, 1);
-                    },
-
-                    selectProjectImage(index) {
-                        this.openMediaModal((media) => {
-                            this.content.projects.items[index].image = media.url;
-                        });
-                    },
-
-                    // Navigation Methods
-                    addMenuItem() {
-                        if (!this.content.navigation) this.content.navigation = [];
-                        this.content.navigation.push({
-                            label: '',
-                            url: ''
-                        });
-                    },
-
-                    removeMenuItem(index) {
-                        this.content.navigation.splice(index, 1);
-                    },
-
-                    // Widget Methods
-                    addWidgetArea() {
-                        if (!this.content.widgetAreas) this.content.widgetAreas = [];
-                        this.content.widgetAreas.push({
-                            name: '',
-                            location: 'sidebar'
-                        });
-                    },
-
-                    removeWidgetArea(index) {
-                        this.content.widgetAreas.splice(index, 1);
-                    },
-
-                    // Page Methods
-                    createNewPage() {
-                        this.editingPage = {
-                            title: '',
-                            slug: '',
-                            content: '',
-                            status: 'draft',
-                            template: 'default',
-                            metaDescription: ''
-                        };
-                        this.currentPageId = null;
-                        this.showPageModal = true;
-                    },
-
-                    editPage(page) {
-                        this.editingPage = { ...page };
-                        this.currentPageId = page.id;
-                        this.showPageModal = true;
-                    },
-
-                    async savePage() {
-                        if (!this.editingPage.title || !this.editingPage.slug) {
-                            this.showNotification('Please fill in required fields', 'error');
-                            return;
-                        }
-
-                        try {
-                            const url = this.currentPageId ? `/api/pages/${this.currentPageId}` : '/api/pages';
-                            const method = this.currentPageId ? 'PUT' : 'POST';
-
-                            const response = await fetch(url, {
-                                method,
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(this.editingPage)
-                            });
-
-                            if (response.ok) {
-                                await this.loadPages();
-                                this.updateStats();
-                                this.closePageModal();
-                                this.showNotification(this.currentPageId ? 'Page updated!' : 'Page created!', 'success');
-                            } else {
-                                throw new Error('Failed to save page');
-                            }
-                        } catch (error) {
-                            console.error('Error saving page:', error);
-                            this.showNotification('Error saving page: ' + error.message, 'error');
-                        }
-                    },
-
-                    async deletePage(pageId) {
-                        if (!confirm('Are you sure you want to delete this page?')) return;
-
-                        try {
-                            const response = await fetch(`/api/pages/${pageId}`, { method: 'DELETE' });
-                            if (response.ok) {
-                                await this.loadPages();
-                                this.updateStats();
-                                this.showNotification('Page deleted!', 'success');
-                            } else {
-                                throw new Error('Failed to delete page');
-                            }
-                        } catch (error) {
-                            console.error('Error deleting page:', error);
-                            this.showNotification('Error deleting page: ' + error.message, 'error');
-                        }
-                    },
-
-                    closePageModal() {
-                        this.showPageModal = false;
-                        this.currentPageId = null;
-                    },
-
-                    // Media Methods
-                    triggerFileUpload() {
-                        this.$refs.fileInput.click();
-                    },
-
-                    handleFileUpload(event) {
-                        const files = Array.from(event.target.files);
-                        this.uploadFiles(files);
-                    },
-
-                    handleFileDrop(event) {
-                        event.preventDefault();
-                        const files = Array.from(event.dataTransfer.files);
-                        this.uploadFiles(files);
-                    },
-
-                    async uploadFiles(files) {
-                        const formData = new FormData();
-                        files.forEach(file => formData.append('files', file));
-
-                        try {
-                            const response = await fetch('/api/media/upload', {
-                                method: 'POST',
-                                body: formData
-                            });
-
-                            if (response.ok) {
-                                const uploadedFiles = await response.json();
-                                this.mediaLibrary.push(...uploadedFiles);
-                                this.updateStats();
-                                this.showNotification(`${uploadedFiles.length} file(s) uploaded successfully!`, 'success');
-                            } else {
-                                throw new Error('Upload failed');
-                            }
-                        } catch (error) {
-                            console.error('Error uploading files:', error);
-                            this.showNotification('Error uploading files: ' + error.message, 'error');
-                        }
-                    },
-
-                    selectMedia(media) {
-                        this.selectedMedia = media;
-                    },
-
-                    async deleteMedia(mediaId) {
-                        if (!confirm('Are you sure you want to delete this media file?')) return;
-
-                        try {
-                            const response = await fetch(`/api/media/${mediaId}`, { method: 'DELETE' });
-                            if (response.ok) {
-                                this.mediaLibrary = this.mediaLibrary.filter(m => m.id !== mediaId);
-                                this.updateStats();
-                                this.showNotification('Media file deleted!', 'success');
-                            } else {
-                                throw new Error('Failed to delete media');
-                            }
-                        } catch (error) {
-                            console.error('Error deleting media:', error);
-                            this.showNotification('Error deleting media: ' + error.message, 'error');
-                        }
-                    },
-
-                    openMediaModal(callback) {
-                        this.mediaSelectionCallback = callback;
-                        this.selectedMediaForSelection = null;
-                        this.showMediaModal = true;
-                    },
-
-                    closeMediaModal() {
-                        this.showMediaModal = false;
-                        this.mediaSelectionCallback = null;
-                        this.selectedMediaForSelection = null;
-                    },
-
-                    selectMediaForCallback() {
-                        if (this.selectedMediaForSelection && this.mediaSelectionCallback) {
-                            this.mediaSelectionCallback(this.selectedMediaForSelection);
-                        }
-                        this.closeMediaModal();
-                    },
-
-                    // Backup Methods
-                    async exportContent() {
-                        try {
-                            const exportData = {
-                                content: this.content,
-                                pages: this.pages,
-                                settings: this.seoSettings,
-                                timestamp: new Date().toISOString()
-                            };
-
-                            const dataStr = JSON.stringify(exportData, null, 2);
-                            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                            const url = window.URL.createObjectURL(dataBlob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `content-export-${new Date().toISOString().split('T')[0]}.json`;
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            document.body.removeChild(a);
-
-                            this.showNotification('Content exported successfully!', 'success');
-                        } catch (error) {
-                            console.error('Error exporting content:', error);
-                            this.showNotification('Error exporting content: ' + error.message, 'error');
-                        }
-                    },
-
-                    async createBackup() {
-                        this.downloading = true;
-                        try {
-                            const backupData = {
-                                content: this.backupOptions.includeContent ? this.content : null,
-                                pages: this.backupOptions.includeContent ? this.pages : null,
-                                settings: this.backupOptions.includeSettings ? this.seoSettings : null,
-                                media: this.backupOptions.includeMedia ? this.mediaLibrary : null,
-                                timestamp: new Date().toISOString(),
-                                version: '1.0'
-                            };
-
-                            const response = await fetch('/api/backup', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(backupData)
-                            });
-
-                            if (response.ok) {
-                                const blob = await response.blob();
-                                const url = window.URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = `backup-${new Date().toISOString().split('T')[0]}.zip`;
-                                document.body.appendChild(a);
-                                a.click();
-                                window.URL.revokeObjectURL(url);
-                                document.body.removeChild(a);
-
-                                this.showNotification('Backup created successfully!', 'success');
-                            } else {
-                                throw new Error('Backup failed');
-                            }
-                        } catch (error) {
-                            console.error('Error creating backup:', error);
-                            this.showNotification('Error creating backup: ' + error.message, 'error');
-                        } finally {
-                            this.downloading = false;
-                        }
-                    },
-
-                    // Notification
-                    showNotification(message, type = 'info') {
-                        this.notification = {
-                            show: true,
-                            type,
-                            message
-                        };
-
-                        setTimeout(() => {
-                            this.notification.show = false;
-                        }, 3000);
+                    mediaLibrary: [],
+                    notification: {
+                        show: false,
+                        type: 'success',
+                        message: ''
                     }
                 }
-            }).mount('#app');
-        </script>
-    </body>
+            },
 
+            methods: {
+                // Menu Management
+                addMenuItem() {
+                    this.content.navigation.mainMenu.push({
+                        title: '',
+                        url: '',
+                        icon: '',
+                        hasDropdown: false,
+                        children: []
+                    });
+                },
+
+                removeMenuItem(index) {
+                    this.content.navigation.mainMenu.splice(index, 1);
+                },
+
+                // Features Management
+                addFeature() {
+                    if (!this.content.features) {
+                        this.content.features = { title: '', subtitle: '', items: [] };
+                    }
+                    this.content.features.items.push({
+                        title: '',
+                        icon: '',
+                        description: ''
+                    });
+                },
+
+                removeFeature(index) {
+                    if (this.content.features && this.content.features.items) {
+                        this.content.features.items.splice(index, 1);
+                    }
+                },
+
+                addDropdownItem(menuIndex) {
+                    if (!this.content.navigation.mainMenu[menuIndex].children) {
+                        this.content.navigation.mainMenu[menuIndex].children = [];
+                    }
+                    this.content.navigation.mainMenu[menuIndex].children.push({
+                        title: '',
+                        url: ''
+                    });
+                },
+
+                removeDropdownItem(menuIndex, childIndex) {
+                    this.content.navigation.mainMenu[menuIndex].children.splice(childIndex, 1);
+                },
+
+                // Hero Slider Management
+                addSlide() {
+                    this.content.hero.slides.push({
+                        image: '',
+                        subtitle: '',
+                        subtitleColor: '#FFD200',
+                        title: '',
+                        description: '',
+                        button1Text: 'READ MORE',
+                        button1Url: '#about',
+                        button2Text: 'GET QUOTE',
+                        button2Url: '#contact'
+                    });
+                },
+
+                removeSlide(index) {
+                    this.content.hero.slides.splice(index, 1);
+                },
+
+                // Services Management
+                addService() {
+                    this.content.services.items.push({
+                        image: '',
+                        title: '',
+                        description: '',
+                        url: ''
+                    });
+                },
+
+                removeService(index) {
+                    this.content.services.items.splice(index, 1);
+                },
+
+                // Footer Management
+                addFooterMenuItem() {
+                    this.content.footer.menu.push({
+                        title: '',
+                        url: ''
+                    });
+                },
+
+                removeFooterMenuItem(index) {
+                    this.content.footer.menu.splice(index, 1);
+                },
+
+                // Media Management
+                handleFileUpload(event) {
+                    this.selectedFiles = Array.from(event.target.files);
+                },
+
+                async uploadFiles() {
+                    if (!this.selectedFiles.length) {
+                        this.showNotification('Please select files to upload', 'error');
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    this.selectedFiles.forEach(file => {
+                        formData.append('files', file);
+                    });
+
+                    try {
+                        const response = await fetch('/api/upload', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Basic ' + btoa('admin:changeme')
+                            },
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            this.showNotification('Files uploaded successfully!', 'success');
+                            this.loadMediaLibrary();
+                            this.selectedFiles = [];
+                        } else {
+                            this.showNotification('Upload failed', 'error');
+                        }
+                    } catch (error) {
+                        this.showNotification('Upload error: ' + error.message, 'error');
+                    }
+                },
+
+                selectMedia(media) {
+                    // Implementation for media selection
+                    console.log('Selected media:', media);
+                },
+
+                formatFileSize(bytes) {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                },
+
+                // Import/Export
+                handleImportFile(event) {
+                    this.importFile = event.target.files[0];
+                },
+
+                async importContent() {
+                    if (!this.importFile) {
+                        this.showNotification('Please select a file to import', 'error');
+                        return;
+                    }
+
+                    try {
+                        const text = await this.importFile.text();
+                        const importedContent = JSON.parse(text);
+                        this.content = { ...this.content, ...importedContent };
+                        await this.saveContent();
+                        this.showNotification('Content imported successfully!', 'success');
+                    } catch (error) {
+                        this.showNotification('Import failed: ' + error.message, 'error');
+                    }
+                },
+
+                async exportContent() {
+                    try {
+                        const dataStr = JSON.stringify(this.content, null, 2);
+                        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                        const url = URL.createObjectURL(dataBlob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'petroleum-gas-content-' + new Date().toISOString().split('T')[0] + '.json';
+                        link.click();
+                        URL.revokeObjectURL(url);
+                        this.showNotification('Content exported successfully!', 'success');
+                    } catch (error) {
+                        this.showNotification('Export failed: ' + error.message, 'error');
+                    }
+                },
+
+                async exportDatabase() {
+                    try {
+                        const response = await fetch('/api/content', {
+                            headers: {
+                                'Authorization': 'Basic ' + btoa('admin:changeme')
+                            }
+                        });
+                        if (response.ok) {
+                            const data = await response.json();
+                            const dataStr = JSON.stringify(data, null, 2);
+                            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                            const url = URL.createObjectURL(dataBlob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = 'petroleum-gas-database-' + new Date().toISOString().split('T')[0] + '.json';
+                            link.click();
+                            URL.revokeObjectURL(url);
+                            this.showNotification('Database exported successfully!', 'success');
+                        } else {
+                            throw new Error('Failed to fetch database content');
+                        }
+                    } catch (error) {
+                        this.showNotification('Database export failed: ' + error.message, 'error');
+                    }
+                },
+
+                // Preview
+                openPreview() {
+                    window.open('/', '_blank');
+                },
+
+                refreshPreview() {
+                    const iframe = document.querySelector('iframe');
+                    if (iframe) {
+                        iframe.src = iframe.src;
+                    }
+                },
+
+                // Content Management
+                async saveContent() {
+                    try {
+                        const response = await fetch('/api/content', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Basic ' + btoa('admin:changeme')
+                            },
+                            body: JSON.stringify(this.content)
+                        });
+
+                        if (response.ok) {
+                            this.showNotification('Content saved successfully! Changes are live on your website.', 'success');
+                        } else {
+                            this.showNotification('Failed to save content', 'error');
+                        }
+                    } catch (error) {
+                        this.showNotification('Error: ' + error.message, 'error');
+                    }
+                },
+
+                async loadContent() {
+                    try {
+                        const response = await fetch('/api/content', {
+                            headers: {
+                                'Authorization': 'Basic ' + btoa('admin:changeme')
+                            }
+                        });
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.content = { ...this.content, ...data };
+                        }
+                    } catch (error) {
+                        console.error('Error loading content:', error);
+                    }
+                },
+
+                async loadMediaLibrary() {
+                    try {
+                        const response = await fetch('/api/media-library', {
+                            headers: {
+                                'Authorization': 'Basic ' + btoa('admin:changeme')
+                            }
+                        });
+                        if (response.ok) {
+                            this.mediaLibrary = await response.json();
+                        }
+                    } catch (error) {
+                        console.error('Error loading media library:', error);
+                    }
+                },
+
+                showNotification(message, type) {
+                    this.notification = {
+                        show: true,
+                        type,
+                        message
+                    };
+                    setTimeout(() => {
+                        this.notification.show = false;
+                    }, 4000);
+                }
+            },
+
+            async mounted() {
+                await this.loadContent();
+                await this.loadMediaLibrary();
+                console.log('Complete Petroleum & Gas CMS loaded - Full website control ready!');
+            }
+        }).mount('#app');
+    </script>
+</body>
 </html>

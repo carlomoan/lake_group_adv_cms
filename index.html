@@ -10,7 +10,7 @@
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:400&subset=latin" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,900&subset=latin" rel="stylesheet">
         <link rel="stylesheet" href="styles.css">
-        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     </head>
 
     <body>
@@ -39,7 +39,7 @@
                                     </h1>
                                 </li>
                                 <li class="toggle-topbar menu-icon">
-                                    <button class="mobile-menu-toggle">☰</button>
+                                    <button class="mobile-menu-toggle" @click="toggleMobileMenu">☰</button>
                                 </li>
                             </ul>
                             <section class="creative top-bar-section right">
@@ -57,11 +57,13 @@
                                     </ul>
                                 </div>
                             </section>
-                            <div class="show-for-large-up creative-social">
+                            <div class="show-for-large-up creative-social" v-if="isComponentVisible('headerSocial')">
                                 <ul class="social-icons inline-list">
-                                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-instagram"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                                    <li v-for="link in getSocialMediaLinks()" :key="link.platform">
+                                        <a :href="link.url" target="_blank" rel="noopener noreferrer">
+                                            <i :class="['fa', link.icon]"></i>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </nav>
@@ -69,7 +71,7 @@
                 </header>
 
                 <!-- Hero Section -->
-                <section id="home" class="hero">
+                <section id="home" class="hero" v-if="isComponentVisible('heroSection')">
                     <div class="hero-slider">
                         <div v-for="(slide, index) in content.hero?.slides" :key="index"
                             :class="['hero-slide', { active: currentSlide === index }]"
@@ -77,10 +79,16 @@
                             <div class="hero-content">
                                 <h4 :style="{ color: resolveColor(slide.titleColor || 'primary', slide.titleColorCustom) }">{{ slide.title }}</h4>
                                 <h2 :style="{ color: resolveColor(slide.subtitleColor || 'white', slide.subtitleColorCustom) }">{{ slide.subtitle }}</h2>
-                                <div class="hero-buttons" v-if="slide.buttons">
+                                <!-- New buttons array format -->
+                                <div class="hero-buttons" v-if="slide.buttons && slide.buttons.length > 0">
                                     <a v-for="button in slide.buttons" :key="button.text" :href="button.url"
-                                        :class="['btn', button.type === 'primary' ? 'btn-primary' : 'btn-secondary']">{{
+                                        :class="['btn', (button.style || button.type) === 'primary' ? 'btn-primary' : 'btn-secondary']">{{
                                         button.text }}</a>
+                                </div>
+                                <!-- Legacy button format fallback -->
+                                <div class="hero-buttons" v-else-if="slide.button1Text || slide.button2Text">
+                                    <a v-if="slide.button1Text" :href="slide.button1Url || '#'" class="btn btn-primary">{{ slide.button1Text }}</a>
+                                    <a v-if="slide.button2Text" :href="slide.button2Url || '#'" class="btn btn-secondary">{{ slide.button2Text }}</a>
                                 </div>
                             </div>
                         </div>
@@ -103,36 +111,35 @@
                         <article class="large-12 columns">
                             <div class="body field clearfix">
                                 <section class="wpb-content-wrapper">
-                                    <!-- Services Section -->
-                                    <div class="services-section">
+                                    <!-- Services Section - Original Template Structure -->
+                                    <div class="services-section" v-if="isComponentVisible('servicesSection')">
                                         <div class="services-grid">
-                                            <div v-for="service in content.services?.items" :key="service.title"
-                                                class="wd-section-blog style2">
+                                            <section v-for="service in content.services?.items" :key="service.title"
+                                                     class="wd-section-blog text-center style2">
                                                 <div class="wd-blog-post test">
                                                     <img :src="service.image" :alt="service.title">
                                                     <h4 class="wd-title-element">{{ service.title }}</h4>
                                                     <p>{{ service.description }}</p>
                                                 </div>
-                                            </div>
+                                            </section>
                                         </div>
                                     </div>
 
-                                    <!-- About Section -->
-                                    <div class="about-section">
+                                    <!-- About Section - Original Template Structure -->
+                                    <div class="vc_custom_1467215196765" v-if="isComponentVisible('aboutSection')">
                                         <div class="about-content">
-                                            <div class="about-text">
+                                            <div class="wd-title-section_l">
                                                 <h2>{{ content.aboutSection?.title || 'Save The Planet!' }}</h2>
-                                                <h5>{{ content.aboutSection?.description || 'Sed posuere consectetur est at lobortis...' }}</h5>
+                                                <h5>{{ content.aboutSection?.description || 'Sed posuere consectetur est at lobortis. Nullam id dolor id nibh ultricies vehicula ut id elit. Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis. Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis.' }}</h5>
                                             </div>
-                                            <div class="about-image">
-                                                <img :src="content.aboutSection?.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=391&h=447&fit=crop'"
-                                                    alt="Professional Worker">
+                                            <div class="about-image" v-if="content.aboutSection?.image">
+                                                <img :src="content.aboutSection.image" alt="About Us Image">
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Features Section -->
-                                    <div class="features-section">
+                                    <div class="features-section" v-if="isComponentVisible('featuresSection')">
                                         <div class="features-container">
                                             <h2 class="section-title">{{ content.featuresSection?.title || 'We Provide Energy' }}</h2>
                                             <h5 class="section-subtitle">{{ content.featuresSection?.subtitle || 'To many clients like government, homes and offices' }}</h5>
@@ -414,7 +421,8 @@
                     return {
                         content: null,
                         currentSlide: 0,
-                        sliderInterval: null
+                        sliderInterval: null,
+                        mobileMenuOpen: false
                     }
                 },
                 async mounted() {
@@ -443,21 +451,148 @@
                                     root.style.setProperty('--tertiary-color', this.content.siteSettings.tertiaryColor);
                                 }
 
-                                // Set navbar background color
-                                if (this.content.siteSettings.navbar?.backgroundColor) {
-                                    root.style.setProperty('--navbar-bg-color', this.content.siteSettings.navbar.backgroundColor);
+                                // Set navbar advanced settings
+                                if (this.content.siteSettings.navbar) {
+                                    const navbar = this.content.siteSettings.navbar;
+
+                                    if (navbar.backgroundColor) {
+                                        root.style.setProperty('--navbar-bg-color', navbar.backgroundColor);
+                                    }
+
+                                    if (navbar.height) {
+                                        root.style.setProperty('--navbar-height', navbar.height + 'px');
+                                    }
+
+                                    if (navbar.transparency) {
+                                        const alpha = (100 - navbar.transparency) / 100;
+                                        const bgColor = navbar.backgroundColor || '#ffffff';
+                                        root.style.setProperty('--navbar-bg-color-transparent', bgColor + Math.round(alpha * 255).toString(16).padStart(2, '0'));
+                                    }
+
+                                    // Set navbar position
+                                    if (navbar.position) {
+                                        const header = document.querySelector('.l-header');
+                                        if (header) {
+                                            header.classList.remove('position-fixed', 'position-sticky', 'position-static');
+                                            header.classList.add('position-' + navbar.position);
+                                        }
+                                    }
+
+                                    // Set dropdown styles
+                                    if (navbar.dropdown) {
+                                        const dropdown = navbar.dropdown;
+                                        if (dropdown.backgroundColor) {
+                                            root.style.setProperty('--dropdown-bg-color', dropdown.backgroundColor);
+                                        }
+                                        if (dropdown.textColor) {
+                                            root.style.setProperty('--dropdown-text-color', dropdown.textColor);
+                                        }
+                                        if (dropdown.backgroundImage && dropdown.backgroundType === 'image') {
+                                            root.style.setProperty('--dropdown-bg-image', `url(${dropdown.backgroundImage})`);
+                                        }
+                                    }
+                                }
+
+                                // Set theme settings
+                                if (this.content.siteSettings.theme) {
+                                    const theme = this.content.siteSettings.theme;
+                                    if (theme.backgroundColor) {
+                                        root.style.setProperty('--body-bg-color', theme.backgroundColor);
+                                    }
+                                    if (theme.textColor) {
+                                        root.style.setProperty('--body-text-color', theme.textColor);
+                                    }
+                                    if (theme.backgroundImage) {
+                                        root.style.setProperty('--body-bg-image', `url(${theme.backgroundImage})`);
+                                    }
+                                    if (theme.fontFamily) {
+                                        root.style.setProperty('--primary-font', theme.fontFamily);
+                                    }
+                                    if (theme.fontSize) {
+                                        root.style.setProperty('--base-font-size', theme.fontSize + 'px');
+                                    }
+                                }
+
+                                // Set section-specific colors
+                                if (this.content.siteSettings.sectionColors) {
+                                    const colors = this.content.siteSettings.sectionColors;
+                                    Object.keys(colors).forEach(section => {
+                                        if (colors[section].backgroundColor) {
+                                            root.style.setProperty(`--${section}-bg-color`, colors[section].backgroundColor);
+                                        }
+                                        if (colors[section].textColor) {
+                                            root.style.setProperty(`--${section}-text-color`, colors[section].textColor);
+                                        }
+                                    });
                                 }
                             }
 
-                            // Update page title
-                            if (this.content.siteTitle) {
-                                document.title = this.content.siteTitle;
+                            // Update page title and favicon
+                            if (this.content.siteTitle || this.content.siteSettings?.siteTitle) {
+                                document.title = this.content.siteSettings?.siteTitle || this.content.siteTitle;
+                            }
+                            if (this.content.siteSettings?.faviconUrl) {
+                                this.updateFavicon(this.content.siteSettings.faviconUrl);
                             }
                         } catch (error) {
                             console.error('Error loading content:', error);
                             // Fallback to static content or show error
                             this.content = this.getDefaultContent();
                         }
+                    },
+                    updateFavicon(faviconUrl) {
+                        // Remove existing favicon links
+                        const existingFavicons = document.querySelectorAll('link[rel*="icon"]');
+                        existingFavicons.forEach(link => link.remove());
+
+                        // Add new favicon
+                        const link = document.createElement('link');
+                        link.rel = 'shortcut icon';
+                        link.type = 'image/x-icon';
+                        link.href = faviconUrl;
+                        document.head.appendChild(link);
+
+                        // Also add apple touch icon
+                        const appleTouchIcon = document.createElement('link');
+                        appleTouchIcon.rel = 'apple-touch-icon';
+                        appleTouchIcon.href = faviconUrl;
+                        document.head.appendChild(appleTouchIcon);
+                    },
+                    getSocialMediaLinks() {
+                        if (!this.content?.siteSettings?.socialMedia) return [];
+
+                        const social = this.content.siteSettings.socialMedia;
+                        const links = [];
+
+                        if (social.facebook) links.push({ platform: 'facebook', url: social.facebook, icon: 'fa-facebook' });
+                        if (social.instagram) links.push({ platform: 'instagram', url: social.instagram, icon: 'fa-instagram' });
+                        if (social.googlePlus) links.push({ platform: 'google-plus', url: social.googlePlus, icon: 'fa-google-plus' });
+                        if (social.twitter) links.push({ platform: 'twitter', url: social.twitter, icon: 'fa-twitter' });
+                        if (social.linkedin) links.push({ platform: 'linkedin', url: social.linkedin, icon: 'fa-linkedin' });
+                        if (social.youtube) links.push({ platform: 'youtube', url: social.youtube, icon: 'fa-youtube' });
+
+                        return links;
+                    },
+                    isComponentVisible(componentName) {
+                        if (!this.content?.siteSettings?.componentVisibility) return true;
+                        const visibility = this.content.siteSettings.componentVisibility[componentName];
+                        return visibility !== false;
+                    },
+                    getLogoSrc() {
+                        if (this.content?.siteSettings?.logo?.logoTransparent && this.content.siteSettings.navbar?.useTransparentLogo) {
+                            return this.content.siteSettings.logo.logoTransparent;
+                        }
+                        return this.content?.siteSettings?.logo?.logoMain || this.content?.siteSettings?.logoMain || '/assets/logo.png';
+                    },
+                    getLogoStyles() {
+                        const styles = {};
+                        if (this.content?.siteSettings?.logo?.logoWidth) {
+                            styles.width = this.content.siteSettings.logo.logoWidth + 'px';
+                        }
+                        if (this.content?.siteSettings?.logo?.logoHeight) {
+                            styles.height = this.content.siteSettings.logo.logoHeight + 'px';
+                        }
+                        return styles;
                     },
                     getDefaultContent() {
                         // Fallback content if API fails
@@ -671,6 +806,18 @@
                         }
 
                         return styles;
+                    },
+                    toggleMobileMenu() {
+                        this.mobileMenuOpen = !this.mobileMenuOpen;
+                        const menu = document.querySelector('#menu-home-menu');
+                        const topBar = document.querySelector('.top-bar');
+                        if (this.mobileMenuOpen) {
+                            menu?.classList.add('mobile-open');
+                            topBar?.classList.add('expanded');
+                        } else {
+                            menu?.classList.remove('mobile-open');
+                            topBar?.classList.remove('expanded');
+                        }
                     }
                 },
                 beforeUnmount() {

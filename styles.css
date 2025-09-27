@@ -36,6 +36,149 @@ img {
     --tertiary-color: #1E3A8A;
 }
 
+/* Original Petroleum Template Styles */
+.wd-section-blog {
+    margin: 50px 0;
+}
+
+.wd-section-blog.text-center {
+    text-align: center;
+}
+
+.wd-section-blog.style2 .wd-blog-post {
+    padding: 40px 20px;
+    border: none;
+    background: transparent;
+}
+
+.wd-section-blog.style2 .wd-blog-post img {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    display: block;
+    object-fit: cover;
+}
+
+.wd-section-blog.style2 .wd-title-element {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #333;
+    margin: 20px 0 15px;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.wd-section-blog.style2 .wd-title-element::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+.wd-section-blog.style2 p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* Services Grid */
+.services-section {
+    padding: 100px 0;
+    background: #f8f9f9;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* About Section - Save The Planet Style */
+.wd-title-section_l h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.wd-title-section_l h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--primary-color);
+}
+
+.wd-title-section_l h5 {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* Background sections */
+.vc_custom_1467215196765 {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 100px 0;
+}
+
+.vc_custom_1467215196765 .wd-title-section_l h2,
+.vc_custom_1467215196765 .wd-title-section_l h5 {
+    color: white;
+}
+
+/* Two column layout */
+.about-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.about-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .wd-title-section_l h2 {
+        font-size: 28px;
+    }
+}
+
 /* Header Styles */
 .l-header {
     position: fixed;
@@ -45,11 +188,48 @@ img {
     z-index: 1000;
     background: transparent;
     transition: all 0.4s ease;
+    height: var(--navbar-height, 70px);
+}
+
+/* Navbar Position Classes */
+.l-header.position-fixed { position: fixed; }
+.l-header.position-sticky { position: sticky; }
+.l-header.position-static { position: static; }
+
+/* Navbar Background */
+.l-header {
+    background: var(--navbar-bg-color-transparent, transparent);
+}
+
+.l-header:not(.scrolled) {
+    background: var(--navbar-bg-color, transparent);
+}
+
+/* Top Bar Styling */
+.top-bar {
+    height: var(--navbar-height, 70px);
+    line-height: var(--navbar-height, 70px);
+    background: var(--navbar-bg-color, transparent);
 }
 
 .l-header.scrolled {
     background: var(--navbar-bg-color, rgba(0, 0, 0, 0.9)) !important;
     backdrop-filter: blur(10px);
+}
+
+/* Dropdown Styling */
+.menu .has-dropdown ul {
+    background: var(--dropdown-bg-color, #ffffff);
+    color: var(--dropdown-text-color, #333333);
+}
+
+.menu .has-dropdown ul li a {
+    color: var(--dropdown-text-color, #333333);
+}
+
+.menu .has-dropdown ul li a:hover {
+    background: var(--dropdown-hover-bg, rgba(255, 210, 0, 0.1));
+    color: var(--dropdown-hover-text, var(--primary-color, #FFD200));
 }
 
 .top-bar-container {
@@ -1141,4 +1321,47 @@ img {
 .fade-in.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Mobile Menu Functionality */
+@media (max-width: 768px) {
+    .top-bar-section {
+        display: none;
+    }
+
+    .top-bar.expanded .top-bar-section {
+        display: block;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(45, 62, 80, 0.98);
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .menu.mobile-open {
+        display: block;
+        padding: 20px;
+    }
+
+    .menu.mobile-open .menu-item {
+        display: block;
+        margin: 10px 0;
+    }
+
+    .menu.mobile-open .menu-item a {
+        display: block;
+        padding: 12px 15px;
+        color: white;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .menu.mobile-open .menu-item a:hover {
+        background: rgba(255, 210, 0, 0.2);
+        color: #FFD200;
+        transform: translateX(5px);
+    }
 }

@@ -44,8 +44,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // public content endpoint (no auth required for frontend)
 app.get('/api/content-public', async (req, res) => {
   try {
-    if (db.configured()) {
-      const data = await db.getContent();
+    if (db.isConfigured()) {
+      const data = await db.getPublicContent();
       if (data) return res.json(data);
       // fallback to file if table empty
     }
@@ -63,7 +63,7 @@ app.use('/api', basicAuth);
 // get content (protected)
 app.get('/api/content', async (req, res) => {
   try {
-    if (db.configured()) {
+    if (db.isConfigured()) {
       const data = await db.getContent();
       if (data) return res.json(data);
       // fallback to file if table empty
@@ -79,7 +79,7 @@ app.get('/api/content', async (req, res) => {
 app.post('/api/content', async (req, res) => {
   const body = req.body;
   try {
-    if (db.configured()) {
+    if (db.isConfigured()) {
       await db.saveContent(body);
       return res.json({ ok: true, source: 'db' });
     }
@@ -125,7 +125,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
   // Save media file info to database if configured
   try {
-    if (db.configured()) {
+    if (db.isConfigured()) {
       await db.saveMediaFile({
         filename: req.file.filename,
         originalName: req.file.originalname,
@@ -152,7 +152,7 @@ app.get('/ping', (req, res) => res.send('pong'));
 // DB status with enhanced information
 app.get('/api/db-status', async (req, res) => {
   try {
-    if (!db.configured()) return res.json({ configured: false, storage: 'file' });
+    if (!db.isConfigured()) return res.json({ configured: false, storage: 'file' });
 
     await db.init();
     const stats = await db.getStats();
@@ -171,7 +171,7 @@ app.get('/api/db-status', async (req, res) => {
 // Media files API
 app.get('/api/media', async (req, res) => {
   try {
-    if (!db.configured()) {
+    if (!db.isConfigured()) {
       return res.json({ files: [], message: 'Database not configured' });
     }
 
@@ -188,7 +188,7 @@ app.get('/api/media', async (req, res) => {
 // Migrate content from file to database
 app.post('/api/migrate', async (req, res) => {
   try {
-    if (!db.configured()) {
+    if (!db.isConfigured()) {
       return res.status(400).json({ error: 'Database not configured' });
     }
 
@@ -243,7 +243,7 @@ app.delete('/api/media/:filename', async (req, res) => {
       fs.unlinkSync(filePath);
 
       // Remove from database if configured
-      if (db.configured()) {
+      if (db.isConfigured()) {
         try {
           await db.deleteMediaFile(filename);
         } catch (error) {
