@@ -8,11 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-// Database configuration
-$host = 'localhost';
-$dbname = 'cateeccx_lake_db';
-$username = 'cateeccx_lake_admin';
-$password = 'Lake@2025';
+// Load environment-based database configuration
+require_once __DIR__ . '/../config.php';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);

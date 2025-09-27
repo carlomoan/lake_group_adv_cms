@@ -28,3 +28,4 @@ logs
 
 # Others
 .DS_Store
+.dev-environment

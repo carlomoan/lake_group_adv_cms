@@ -4,11 +4,11 @@
  * This script creates all necessary tables and populates them with sample data
  */
 
-// Database configuration - Update these settings
-$host = 'localhost';
-$dbname = 'cateeccx_lake_db';
-$username = 'cateeccx_lake_admin';
-$password = 'Lake@2025';
+// Load environment-based database configuration
+require_once __DIR__ . '/config.php';
+
+echo "🌍 Environment: " . $dbConfig['environment'] . "\n";
+echo "📊 Database: {$username}@{$host}/{$dbname}\n";
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
