@@ -10,16 +10,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Database configuration
 $host = 'localhost';
-$dbname = 'lake_db';
-$username = 'root';
-$password = 123456;
+$dbname = 'cateeccx_lake_db';
+$username = 'cateeccx_lake_admin';
+$password = 'Lake@2025';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Database connection failed: ' . $e->getMessage(),
+        'details' => [
+            'host' => $host,
+            'database' => $dbname,
+            'username' => $username
+        ]
+    ]);
     exit;
 }
 
@@ -523,7 +531,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->rollBack();
         http_response_code(500);
         echo json_encode([
-            'error' => 'Failed to save content: ' . $e->getMessage()
+            'success' => false,
+            'error' => 'Failed to save content: ' . $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
         ]);
     }
 

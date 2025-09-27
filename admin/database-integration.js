@@ -34,7 +34,18 @@ window.addEventListener('DOMContentLoaded', function() {
                         // Also save to localStorage as backup
                         localStorage.setItem('petroleumGasContent', JSON.stringify(this.content));
                     } else {
-                        throw new Error(result.error || 'Failed to save content');
+                        console.error('Save failed - Server response:', result);
+                        const errorMsg = result.error || 'Failed to save content';
+
+                        // Show detailed error if available
+                        if (result.details) {
+                            console.error('Error details:', result.details);
+                        }
+                        if (result.trace) {
+                            console.error('Error trace:', result.trace);
+                        }
+
+                        throw new Error(errorMsg);
                     }
 
                     console.log('Content saved to database:', this.content);

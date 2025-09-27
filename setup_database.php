@@ -6,9 +6,9 @@
 
 // Database configuration - Update these settings
 $host = 'localhost';
-$dbname = 'lake_db';
-$username = 'root';
-$password = 123456;
+$dbname = 'cateeccx_lake_db';
+$username = 'cateeccx_lake_admin';
+$password = 'Lake@2025';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
