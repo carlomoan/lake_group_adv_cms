@@ -10,10 +10,24 @@ function overrideSaveContent(vueInstance) {
 
     // Override with database save
     vueInstance.saveContent = async function() {
-        console.log('Database saveContent called with content:', this.content);
+        console.log('Database saveContent called');
+        console.log('this context:', this);
+        console.log('Content available:', !!this.content);
+        console.log('showNotification available:', typeof this.showNotification);
+
+        // Get content from multiple possible sources
+        let contentToSave = this.content || this.$data?.content || vueInstance.content || {};
+        console.log('Content to save:', contentToSave);
 
         try {
-            this.showNotification('Saving content to database...', 'info');
+            // Try to show notification if available
+            if (typeof this.showNotification === 'function') {
+                this.showNotification('Saving content to database...', 'info');
+            } else if (typeof vueInstance.showNotification === 'function') {
+                vueInstance.showNotification('Saving content to database...', 'info');
+            } else {
+                console.log('Saving content to database...');
+            }
 
             const response = await fetch('save_content.php', {
                 method: 'POST',
@@ -21,7 +35,7 @@ function overrideSaveContent(vueInstance) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    content: this.content
+                    content: contentToSave
                 })
             });
 
@@ -35,13 +49,28 @@ function overrideSaveContent(vueInstance) {
             console.log('Save response data:', result);
 
             if (result.success) {
-                this.showNotification('Content saved successfully to database! Changes are live.', 'success');
+                // Try to show success notification
+                if (typeof this.showNotification === 'function') {
+                    this.showNotification('Content saved successfully to database! Changes are live.', 'success');
+                } else if (typeof vueInstance.showNotification === 'function') {
+                    vueInstance.showNotification('Content saved successfully to database! Changes are live.', 'success');
+                } else {
+                    console.log('✅ Content saved successfully to database! Changes are live.');
+                    // Fallback: show browser notification
+                    if (typeof alert === 'function') {
+                        alert('Content saved successfully to database!');
+                    }
+                }
 
-                // Update backup date
-                this.lastBackupDate = new Date().toISOString();
+                // Update backup date if possible
+                if (this.lastBackupDate !== undefined) {
+                    this.lastBackupDate = new Date().toISOString();
+                } else if (vueInstance.lastBackupDate !== undefined) {
+                    vueInstance.lastBackupDate = new Date().toISOString();
+                }
 
                 // Also save to localStorage as backup
-                localStorage.setItem('petroleumGasContent', JSON.stringify(this.content));
+                localStorage.setItem('petroleumGasContent', JSON.stringify(contentToSave));
 
                 console.log('✅ Database save successful');
             } else {
@@ -50,7 +79,15 @@ function overrideSaveContent(vueInstance) {
 
         } catch (error) {
             console.error('❌ Database save failed:', error);
-            this.showNotification('Database save failed: ' + error.message + '. Using fallback.', 'error');
+
+            // Try to show error notification
+            if (typeof this.showNotification === 'function') {
+                this.showNotification('Database save failed: ' + error.message + '. Using fallback.', 'error');
+            } else if (typeof vueInstance.showNotification === 'function') {
+                vueInstance.showNotification('Database save failed: ' + error.message + '. Using fallback.', 'error');
+            } else {
+                console.log('❌ Database save failed, using fallback');
+            }
 
             // Fallback to original method if it exists
             if (originalSaveContent && typeof originalSaveContent === 'function') {
@@ -63,8 +100,15 @@ function overrideSaveContent(vueInstance) {
             } else {
                 // Fallback to localStorage
                 console.log('Using localStorage fallback...');
-                localStorage.setItem('petroleumGasContent', JSON.stringify(this.content));
-                this.showNotification('Content saved to local storage as backup', 'warning');
+                localStorage.setItem('petroleumGasContent', JSON.stringify(contentToSave));
+
+                if (typeof this.showNotification === 'function') {
+                    this.showNotification('Content saved to local storage as backup', 'warning');
+                } else if (typeof vueInstance.showNotification === 'function') {
+                    vueInstance.showNotification('Content saved to local storage as backup', 'warning');
+                } else {
+                    console.log('Content saved to local storage as backup');
+                }
             }
         }
     };
