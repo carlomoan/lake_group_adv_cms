@@ -113,7 +113,113 @@ function overrideSaveContent(vueInstance) {
         }
     };
 
-    console.log('✅ saveContent method successfully overridden');
+    // Also override loadContent method for database loading
+    const originalLoadContent = vueInstance.loadContent;
+
+    vueInstance.loadContent = async function() {
+        console.log('Database loadContent called');
+
+        try {
+            console.log('Loading content from database...');
+
+            const response = await fetch('save_content.php', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log('Load response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log('Load response data:', result);
+
+            if (result.success && result.content) {
+                // Merge database content with existing content
+                const loadedContent = result.content;
+                console.log('Merging loaded content:', loadedContent);
+
+                // Try to update content in multiple ways
+                if (this.content && typeof this.content === 'object') {
+                    this.content = { ...this.content, ...loadedContent };
+                } else if (vueInstance.content && typeof vueInstance.content === 'object') {
+                    vueInstance.content = { ...vueInstance.content, ...loadedContent };
+                }
+
+                // Show success notification
+                if (typeof this.showNotification === 'function') {
+                    this.showNotification('Content loaded from database successfully!', 'success');
+                } else if (typeof vueInstance.showNotification === 'function') {
+                    vueInstance.showNotification('Content loaded from database successfully!', 'success');
+                } else {
+                    console.log('✅ Content loaded from database successfully!');
+                }
+
+                console.log('✅ Database load successful');
+                return loadedContent;
+
+            } else {
+                console.log('No content in database response, trying fallback...');
+                throw new Error('No content returned from database');
+            }
+
+        } catch (error) {
+            console.error('❌ Database load failed:', error);
+
+            // Try to show error notification
+            if (typeof this.showNotification === 'function') {
+                this.showNotification('Database load failed: ' + error.message + '. Using fallback.', 'warning');
+            } else if (typeof vueInstance.showNotification === 'function') {
+                vueInstance.showNotification('Database load failed: ' + error.message + '. Using fallback.', 'warning');
+            } else {
+                console.log('❌ Database load failed, using fallback');
+            }
+
+            // Fallback to original method if it exists
+            if (originalLoadContent && typeof originalLoadContent === 'function') {
+                console.log('Trying original load method...');
+                try {
+                    return await originalLoadContent.call(this);
+                } catch (fallbackError) {
+                    console.error('Original load also failed:', fallbackError);
+                }
+            } else {
+                // Fallback to localStorage
+                console.log('Using localStorage fallback...');
+                try {
+                    const savedContent = localStorage.getItem('petroleumGasContent');
+                    if (savedContent) {
+                        const parsedContent = JSON.parse(savedContent);
+
+                        // Try to update content
+                        if (this.content && typeof this.content === 'object') {
+                            this.content = { ...this.content, ...parsedContent };
+                        } else if (vueInstance.content && typeof vueInstance.content === 'object') {
+                            vueInstance.content = { ...vueInstance.content, ...parsedContent };
+                        }
+
+                        if (typeof this.showNotification === 'function') {
+                            this.showNotification('Content loaded from local storage', 'info');
+                        } else if (typeof vueInstance.showNotification === 'function') {
+                            vueInstance.showNotification('Content loaded from local storage', 'info');
+                        } else {
+                            console.log('Content loaded from local storage');
+                        }
+
+                        return parsedContent;
+                    }
+                } catch (localError) {
+                    console.error('Local storage load also failed:', localError);
+                }
+            }
+        }
+    };
+
+    console.log('✅ saveContent and loadContent methods successfully overridden');
     return true;
 }
 
@@ -183,6 +289,43 @@ function attemptOverride() {
 
     if (findAndOverrideVue()) {
         console.log('🎉 Database integration setup complete!');
+
+        // Automatically load content from database
+        setTimeout(async () => {
+            console.log('Auto-loading content from database...');
+
+            // Find the Vue instance again to call loadContent
+            const appElement = document.getElementById('app');
+            let vueToLoad = null;
+
+            // Try multiple ways to find the Vue instance
+            if (appElement && appElement.__vue_app__ && appElement.__vue_app__._instance) {
+                vueToLoad = appElement.__vue_app__._instance;
+            } else {
+                // Search window properties
+                for (let prop in window) {
+                    if (window[prop] &&
+                        typeof window[prop] === 'object' &&
+                        window[prop].loadContent &&
+                        typeof window[prop].loadContent === 'function') {
+                        vueToLoad = window[prop];
+                        break;
+                    }
+                }
+            }
+
+            if (vueToLoad && typeof vueToLoad.loadContent === 'function') {
+                try {
+                    await vueToLoad.loadContent();
+                    console.log('✅ Auto-load completed successfully');
+                } catch (error) {
+                    console.error('❌ Auto-load failed:', error);
+                }
+            } else {
+                console.log('Could not find Vue instance for auto-load');
+            }
+        }, 2000); // Wait 2 seconds for Vue to fully initialize
+
         return;
     }
 

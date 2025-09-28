@@ -2375,6 +2375,9 @@
                 console.log('Complete Petroleum & Gas CMS loaded - Full website control ready!');
                 // Load additional data if needed
                 this.loadMediaLibrary();
+
+                // In production mode, content will be auto-loaded by database integration script
+                // The database integration script will override loadContent method and auto-load after setup
             }
         }).mount('#app');
     </script>
