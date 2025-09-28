@@ -1491,7 +1491,7 @@
         </div>
     </div>
 
-    <script src="database-integration.js"></script>
+    <script src="database-integration-fixed.js"></script>
     <script>
         const { createApp } = Vue;
 
@@ -2293,25 +2293,17 @@
 
                 async exportDatabase() {
                     try {
-                        const response = await fetch('/api/content', {
-                            headers: {
-                                'Authorization': 'Basic ' + btoa('admin:changeme')
-                            }
-                        });
-                        if (response.ok) {
-                            const data = await response.json();
-                            const dataStr = JSON.stringify(data, null, 2);
-                            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                            const url = URL.createObjectURL(dataBlob);
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.download = 'petroleum-gas-database-' + new Date().toISOString().split('T')[0] + '.json';
-                            link.click();
-                            URL.revokeObjectURL(url);
-                            this.showNotification('Database exported successfully!', 'success');
-                        } else {
-                            throw new Error('Failed to fetch database content');
-                        }
+                        // Export current content instead of calling non-existent API
+                        const data = this.content;
+                        const dataStr = JSON.stringify(data, null, 2);
+                        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                        const url = URL.createObjectURL(dataBlob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'petroleum-gas-content-' + new Date().toISOString().split('T')[0] + '.json';
+                        link.click();
+                        URL.revokeObjectURL(url);
+                        this.showNotification('Content exported successfully!', 'success');
                     } catch (error) {
                         this.showNotification('Database export failed: ' + error.message, 'error');
                     }
@@ -2329,23 +2321,12 @@
                     }
                 },
 
-                // Content Management
+                // Content Management (will be overridden by database-integration.js)
                 async saveContent() {
                     try {
-                        const response = await fetch('/api/content', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': 'Basic ' + btoa('admin:changeme')
-                            },
-                            body: JSON.stringify(this.content)
-                        });
-
-                        if (response.ok) {
-                            this.showNotification('Content saved successfully! Changes are live on your website.', 'success');
-                        } else {
-                            this.showNotification('Failed to save content', 'error');
-                        }
+                        console.log('Default saveContent called - saving to localStorage as fallback');
+                        localStorage.setItem('petroleumGasContent', JSON.stringify(this.content));
+                        this.showNotification('Content saved to local storage (fallback mode)', 'warning');
                     } catch (error) {
                         this.showNotification('Error: ' + error.message, 'error');
                     }
@@ -2353,14 +2334,12 @@
 
                 async loadContent() {
                     try {
-                        const response = await fetch('/api/content', {
-                            headers: {
-                                'Authorization': 'Basic ' + btoa('admin:changeme')
-                            }
-                        });
-                        if (response.ok) {
-                            const data = await response.json();
+                        console.log('Default loadContent called - loading from localStorage as fallback');
+                        const savedContent = localStorage.getItem('petroleumGasContent');
+                        if (savedContent) {
+                            const data = JSON.parse(savedContent);
                             this.content = { ...this.content, ...data };
+                            this.showNotification('Content loaded from local storage (fallback mode)', 'info');
                         }
                     } catch (error) {
                         console.error('Error loading content:', error);
@@ -2369,14 +2348,12 @@
 
                 async loadMediaLibrary() {
                     try {
-                        const response = await fetch('/api/media-library', {
-                            headers: {
-                                'Authorization': 'Basic ' + btoa('admin:changeme')
-                            }
-                        });
-                        if (response.ok) {
-                            this.mediaLibrary = await response.json();
-                        }
+                        console.log('Loading media library - using placeholder data');
+                        // Placeholder media library data
+                        this.mediaLibrary = [
+                            { id: 1, name: 'placeholder-1.jpg', url: 'https://via.placeholder.com/150x100', type: 'image' },
+                            { id: 2, name: 'placeholder-2.jpg', url: 'https://via.placeholder.com/150x100', type: 'image' }
+                        ];
                     } catch (error) {
                         console.error('Error loading media library:', error);
                     }

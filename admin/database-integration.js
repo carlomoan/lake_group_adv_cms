@@ -3,19 +3,26 @@
 
 // Override the default save and load methods
 window.addEventListener('DOMContentLoaded', function() {
-    // Wait for Vue to mount, then override methods
-    setTimeout(function() {
+    // Wait for Vue to mount, then override methods with multiple attempts
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    function tryOverrideVueMethods() {
+        attempts++;
+        console.log('Attempting to override Vue methods, attempt:', attempts);
+
         // Find the Vue app instance in the mounted DOM
         const appElement = document.getElementById('app');
-        if (appElement && appElement.__vue_app__) {
+        if (appElement && appElement.__vue_app__ && appElement.__vue_app__._instance) {
             const app = appElement.__vue_app__._instance;
+            console.log('Vue app found, overriding methods');
 
             // Override saveContent method
             app.saveContent = async function() {
                 try {
                     this.showNotification('Saving content to database...', 'info');
 
-                    const response = await fetch('./save_content.php', {
+                    const response = await fetch('save_content.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -67,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function() {
             app.loadContent = async function() {
                 try {
                     // Try to load from database first
-                    const response = await fetch('./save_content.php', {
+                    const response = await fetch('save_content.php', {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -112,6 +119,17 @@ window.addEventListener('DOMContentLoaded', function() {
             };
 
             console.log('Database integration methods overridden successfully');
+            return; // Success, stop trying
+        } else {
+            console.log('Vue app not ready yet, retrying...');
+            if (attempts < maxAttempts) {
+                setTimeout(tryOverrideVueMethods, 1000);
+            } else {
+                console.error('Failed to find Vue app after', maxAttempts, 'attempts');
+            }
         }
-    }, 1000);
+    }
+
+    // Start trying to override Vue methods
+    tryOverrideVueMethods();
 });

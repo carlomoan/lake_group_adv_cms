@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test JavaScript Loading</title>
+</head>
+<body>
+    <h1>Testing JavaScript Files</h1>
+    <div id="results"></div>
+
+    <script>
+        function log(message) {
+            document.getElementById('results').innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        // Test if database-integration.js is accessible
+        fetch('database-integration.js')
+            .then(response => {
+                log('database-integration.js status: ' + response.status);
+                return response.text();
+            })
+            .then(text => {
+                log('database-integration.js size: ' + text.length + ' characters');
+                if (text.length < 100) {
+                    log('File content preview: ' + text);
+                }
+            })
+            .catch(error => {
+                log('Error loading database-integration.js: ' + error.message);
+            });
+
+        // Test if save_content.php is accessible
+        fetch('save_content.php')
+            .then(response => {
+                log('save_content.php status: ' + response.status);
+            })
+            .catch(error => {
+                log('Error loading save_content.php: ' + error.message);
+            });
+    </script>
+</body>
+</html>
