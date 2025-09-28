@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Save Endpoint</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        textarea { width: 100%; height: 300px; font-family: monospace; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Save Endpoint Test</h1>
+
+    <div class="section">
+        <h3>Quick Tests</h3>
+        <button onclick="testBasicSave()">Test Basic Save</button>
+        <button onclick="testGetRequest()">Test GET Request</button>
+        <button onclick="testInvalidData()">Test Invalid Data</button>
+        <button onclick="testLargeSave()">Test Large Save</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div class="section">
+        <h3>Custom Test</h3>
+        <textarea id="customData" placeholder="Enter JSON data to test...">
+{
+  "content": {
+    "siteSettings": {
+      "siteTitle": "Custom Test Title",
+      "tagline": "Custom Test Tagline"
+    }
+  }
+}
+        </textarea>
+        <br>
+        <button onclick="testCustomSave()">Send Custom Data</button>
+    </div>
+
+    <div id="results"></div>
+
+    <div class="section">
+        <h3>Raw Response:</h3>
+        <textarea id="rawResponse" readonly></textarea>
+    </div>
+
+    <script>
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = 'result ' + type;
+            div.innerHTML = '<strong>' + new Date().toLocaleTimeString() + ':</strong> ' + message;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function setRawResponse(data) {
+            document.getElementById('rawResponse').value = JSON.stringify(data, null, 2);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('rawResponse').value = '';
+        }
+
+        async function makeRequest(method, data = null) {
+            const url = 'save_content.php';
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            addResult(`Making ${method} request to ${url}...`, 'info');
+
+            try {
+                const response = await fetch(url, options);
+                const responseText = await response.text();
+
+                addResult(`Response status: ${response.status} ${response.statusText}`,
+                    response.ok ? 'success' : 'error');
+
+                try {
+                    const result = JSON.parse(responseText);
+                    setRawResponse(result);
+
+                    if (result.success) {
+                        addResult('✓ ' + (result.message || 'Operation successful'), 'success');
+                    } else {
+                        addResult('✗ ' + (result.error || 'Operation failed'), 'error');
+                    }
+
+                    return result;
+                } catch (jsonError) {
+                    addResult('✗ Invalid JSON response', 'error');
+                    setRawResponse({ error: 'Invalid JSON', response: responseText });
+                    return null;
+                }
+
+            } catch (error) {
+                addResult('✗ Network error: ' + error.message, 'error');
+                setRawResponse({ error: error.message });
+                return null;
+            }
+        }
+
+        async function testBasicSave() {
+            addResult('=== Testing Basic Save ===', 'info');
+
+            const testData = {
+                content: {
+                    siteSettings: {
+                        siteTitle: 'Test Title ' + Date.now(),
+                        tagline: 'Test Tagline ' + Date.now()
+                    }
+                }
+            };
+
+            await makeRequest('POST', testData);
+        }
+
+        async function testGetRequest() {
+            addResult('=== Testing GET Request ===', 'info');
+            await makeRequest('GET');
+        }
+
+        async function testInvalidData() {
+            addResult('=== Testing Invalid Data ===', 'info');
+            await makeRequest('POST', { invalid: 'data' });
+        }
+
+        async function testLargeSave() {
+            addResult('=== Testing Large Save ===', 'info');
+
+            const largeData = {
+                content: {
+                    siteSettings: {
+                        siteTitle: 'Large Test ' + Date.now(),
+                        tagline: 'Large tagline with lots of content '.repeat(10)
+                    },
+                    navigation: {
+                        mainMenu: Array(50).fill().map((_, i) => ({
+                            title: `Menu Item ${i}`,
+                            url: `/page-${i}`,
+                            description: 'Description '.repeat(20)
+                        }))
+                    }
+                }
+            };
+
+            await makeRequest('POST', largeData);
+        }
+
+        async function testCustomSave() {
+            addResult('=== Testing Custom Data ===', 'info');
+
+            try {
+                const customData = JSON.parse(document.getElementById('customData').value);
+                await makeRequest('POST', customData);
+            } catch (error) {
+                addResult('✗ Invalid JSON in custom data: ' + error.message, 'error');
+            }
+        }
+
+        // Run initial test on page load
+        window.onload = function() {
+            addResult('Page loaded. Ready to test save endpoint.', 'info');
+        };
+    </script>
+</body>
+</html>
