@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vue Detection Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+    <h1>Vue Detection Test</h1>
+    <div id="app">
+        <button @click="testSave">Test Save</button>
+        <p>{{ message }}</p>
+    </div>
+
+    <div id="debug"></div>
+
+    <script>
+        function log(msg) {
+            console.log(msg);
+            document.getElementById('debug').innerHTML += '<p>' + msg + '</p>';
+        }
+
+        const { createApp } = Vue;
+
+        const app = createApp({
+            data() {
+                return {
+                    message: 'Vue app loaded',
+                    content: { test: 'data' }
+                };
+            },
+            methods: {
+                testSave() {
+                    log('Test save called');
+                    this.message = 'Save method called at ' + new Date().toLocaleTimeString();
+                },
+                showNotification(msg, type) {
+                    log('Notification: ' + msg + ' (' + type + ')');
+                    this.message = msg;
+                }
+            },
+            mounted() {
+                log('Vue app mounted successfully');
+
+                // Debug Vue detection
+                setTimeout(() => {
+                    log('=== Vue Detection Debug ===');
+
+                    const appEl = document.getElementById('app');
+                    log('App element exists: ' + !!appEl);
+                    log('App element __vue_app__: ' + !!(appEl && appEl.__vue_app__));
+                    log('App element __vue__: ' + !!(appEl && appEl.__vue__));
+
+                    if (appEl && appEl.__vue_app__) {
+                        log('Vue app _instance: ' + !!(appEl.__vue_app__._instance));
+                        if (appEl.__vue_app__._instance) {
+                            const instance = appEl.__vue_app__._instance;
+                            log('Instance has saveContent: ' + (typeof instance.testSave === 'function'));
+                            log('Instance has showNotification: ' + (typeof instance.showNotification === 'function'));
+                        }
+                    }
+
+                    log('window.Vue: ' + !!window.Vue);
+                    log('=== End Debug ===');
+                }, 1000);
+            }
+        });
+
+        const mountedApp = app.mount('#app');
+        log('Vue app mounted to DOM');
+
+        // Store reference for testing
+        window.vueApp = mountedApp;
+    </script>
+
+    <script src="database-integration-v2.js"></script>
+</body>
+</html>
