@@ -1730,6 +1730,29 @@
         // Database Integration for Admin Dashboard - Embedded
         // Store the methods to be injected into Vue app
         window.DATABASE_METHODS = {
+            // Deep merge helper to properly merge nested objects
+            deepMerge(target, source) {
+                const output = { ...target };
+                if (this.isObject(target) && this.isObject(source)) {
+                    Object.keys(source).forEach(key => {
+                        if (this.isObject(source[key])) {
+                            if (!(key in target)) {
+                                Object.assign(output, { [key]: source[key] });
+                            } else {
+                                output[key] = this.deepMerge(target[key], source[key]);
+                            }
+                        } else {
+                            Object.assign(output, { [key]: source[key] });
+                        }
+                    });
+                }
+                return output;
+            },
+
+            isObject(item) {
+                return item && typeof item === 'object' && !Array.isArray(item);
+            },
+
             // Enhanced saveContent method
             async saveContent() {
                 try {
@@ -1801,8 +1824,9 @@
                     if (response.ok) {
                         const result = await response.json();
                         if (result.success && result.content) {
-                            // Merge database content with existing structure
-                            this.content = { ...this.content, ...result.content };
+                            console.log('Loaded content from database:', result.content);
+                            // Deep merge database content with existing structure to preserve nested objects
+                            this.content = this.deepMerge(this.content, result.content);
                             this.showNotification('Content loaded from database!', 'success');
                             return;
                         }
@@ -2811,10 +2835,12 @@
 
             mounted() {
                 console.log('Complete Petroleum & Gas CMS loaded - Full website control ready!');
-                // Load additional data if needed
-                this.loadMediaLibrary();
 
-                // In production mode, content will be auto-loaded by database integration script
+                // Load content from database
+                this.loadContent();
+
+                // Load media library
+                this.loadMediaLibrary();
                 // The database integration script will override loadContent method and auto-load after setup
             }
         }).mount('#app');
