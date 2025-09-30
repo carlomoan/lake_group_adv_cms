@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ content?.siteTitle || 'Petroleum and Gas – Gas and Oil WordPress theme' }}</title>
+        <title>Petroleum and Gas – Gas and Oil WordPress theme</title>
         <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:400&subset=latin" rel="stylesheet">
@@ -29,11 +29,11 @@
                             <ul class="title-area">
                                 <li class="name">
                                     <h1>
-                                        <a :title="content.siteTitle" rel="home"
+                                        <a :title="content.siteSettings?.siteTitle" rel="home"
                                             :href="content.siteSettings?.logo?.link || '#home'"
                                             :target="content.siteSettings?.logo?.linkTarget || '_self'">
                                             <img class="logo"
-                                                :alt="content.siteSettings?.logo?.altText || content.siteTitle"
+                                                :alt="content.siteSettings?.logo?.altText || content.siteSettings?.siteTitle"
                                                 :src="getLogoSrc()" :style="getLogoStyles()">
                                         </a>
                                     </h1>
@@ -621,59 +621,6 @@
 
                         console.log('Content merged with defaults:', mergedContent);
                         return mergedContent;
-                    },
-                    validateImageUrls(content) {
-                        // Helper function to validate and fix image URLs
-                        const fixImageUrl = (url, defaultUrl = 'https://via.placeholder.com/400x300/FFD200/333?text=IMAGE') => {
-                            if (!url || typeof url !== 'string' || url.includes('[object') || url === '[object Object]') {
-                                console.warn('Invalid image URL detected and fixed:', url);
-                                return defaultUrl;
-                            }
-                            return url;
-                        };
-
-                        // Fix logo URLs
-                        if (content.siteSettings?.logo) {
-                            content.siteSettings.logo = fixImageUrl(content.siteSettings.logo, 'https://via.placeholder.com/150x50/FFD200/333?text=PETROLEUM');
-                        }
-
-                        // Fix hero slide images
-                        if (content.hero?.slides) {
-                            content.hero.slides.forEach(slide => {
-                                slide.image = fixImageUrl(slide.image, 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop');
-                            });
-                        }
-
-                        // Fix service images
-                        if (content.services?.items) {
-                            content.services.items.forEach(service => {
-                                service.image = fixImageUrl(service.image);
-                            });
-                        }
-
-                        // Fix project images
-                        if (content.latestProjects) {
-                            content.latestProjects.forEach(project => {
-                                project.image = fixImageUrl(project.image);
-                            });
-                        }
-
-                        // Fix news images
-                        if (content.latestNews) {
-                            content.latestNews.forEach(news => {
-                                news.image = fixImageUrl(news.image);
-                            });
-                        }
-
-                        // Fix about section image
-                        if (content.aboutSection?.image) {
-                            content.aboutSection.image = fixImageUrl(content.aboutSection.image, 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=400&fit=crop');
-                        }
-
-                        // Fix footer logo
-                        if (content.footer?.logo) {
-                            content.footer.logo = fixImageUrl(content.footer.logo, 'https://via.placeholder.com/150x50/FFFFFF/333?text=PETROLEUM');
-                        }
                     },
                     updateFavicon(faviconUrl) {
                         // Remove existing favicon links

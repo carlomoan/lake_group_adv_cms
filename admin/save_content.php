@@ -12,18 +12,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once __DIR__ . '/../config.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    // Validate that all required config variables are set
+    if (empty($host) || empty($dbname) || empty($username)) {
+        throw new Exception('Database configuration is incomplete');
+    }
+
+    $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
+    $pdo = new PDO($dsn, $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Test the connection
+    $pdo->query("SELECT 1")->fetch();
+
 } catch(PDOException $e) {
     http_response_code(500);
     echo json_encode([
         'success' => false,
         'error' => 'Database connection failed: ' . $e->getMessage(),
+        'environment' => $dbConfig['environment'] ?? 'unknown',
         'details' => [
             'host' => $host,
             'database' => $dbname,
-            'username' => $username
+            'username' => $username,
+            'dsn' => isset($dsn) ? $dsn : 'not set'
         ]
+    ]);
+    exit;
+} catch(Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Configuration error: ' . $e->getMessage()
     ]);
     exit;
 }
@@ -596,8 +615,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
         }
 
-        // Load other content sections as needed...
-        // (Additional loading code would go here for other sections)
+        // Load Hero Slides
+        $stmt = $pdo->query("SELECT * FROM hero_slides WHERE is_active = 1 ORDER BY slide_order");
+        $heroSlides = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($heroSlides) {
+            $content['hero'] = ['slides' => []];
+            foreach ($heroSlides as $slide) {
+                $content['hero']['slides'][] = [
+                    'image' => $slide['image_url'],
+                    'subtitle' => $slide['subtitle'],
+                    'subtitleColor' => $slide['subtitle_color'],
+                    'title' => $slide['title'],
+                    'description' => $slide['description'],
+                    'button1Text' => $slide['button1_text'],
+                    'button1Url' => $slide['button1_url'],
+                    'button2Text' => $slide['button2_text'],
+                    'button2Url' => $slide['button2_url']
+                ];
+            }
+        }
+
+        // Load Services
+        try {
+            $stmt = $pdo->query("SELECT * FROM services WHERE is_active = 1 ORDER BY sort_order");
+            $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($services) {
+                $content['services'] = ['items' => []];
+                foreach ($services as $service) {
+                    $content['services']['items'][] = [
+                        'title' => $service['title'],
+                        'image' => $service['image_url'],
+                        'description' => $service['description']
+                    ];
+                }
+            }
+        } catch (Exception $e) {
+            // Services table might not exist, skip silently
+        }
+
+        // Load Projects
+        try {
+            $stmt = $pdo->query("SELECT * FROM projects WHERE is_active = 1 ORDER BY sort_order LIMIT 6");
+            $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($projects) {
+                $content['projects'] = ['items' => []];
+                foreach ($projects as $project) {
+                    $content['projects']['items'][] = [
+                        'title' => $project['title'],
+                        'image' => $project['image_url'],
+                        'description' => $project['description'],
+                        'category' => $project['category'],
+                        'link' => $project['url']
+                    ];
+                }
+            }
+        } catch (Exception $e) {
+            // Projects table might not exist, skip silently
+        }
+
+        // Load News Articles (skip if table doesn't exist)
+        try {
+            $stmt = $pdo->query("SELECT * FROM news WHERE is_active = 1 ORDER BY created_at DESC LIMIT 6");
+            $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($news) {
+                $content['news'] = ['articles' => []];
+                foreach ($news as $article) {
+                    $content['news']['articles'][] = [
+                        'title' => $article['title'],
+                        'image' => $article['featured_image'],
+                        'excerpt' => $article['excerpt'],
+                        'date' => $article['created_at'],
+                        'author' => $article['author'] ?? 'Admin',
+                        'link' => $article['url']
+                    ];
+                }
+            }
+        } catch (Exception $e) {
+            // News table might not exist, skip silently
+        }
 
         echo json_encode([
             'success' => true,

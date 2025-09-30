@@ -6,13 +6,33 @@
 
 function getDatabaseConfig() {
     // Check if we're in development environment
+    $httpHost = $_SERVER['HTTP_HOST'] ?? '';
+    $serverName = $_SERVER['SERVER_NAME'] ?? '';
+    $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
+
+    // Multiple ways to detect development environment
     $isDev = (
-        $_SERVER['HTTP_HOST'] === 'localhost' ||
-        $_SERVER['HTTP_HOST'] === '127.0.0.1' ||
-        strpos($_SERVER['HTTP_HOST'], 'localhost:') === 0 ||
-        $_SERVER['SERVER_NAME'] === 'localhost' ||
-        file_exists(__DIR__ . '/.dev-environment')
+        // Local development indicators
+        $httpHost === 'localhost' ||
+        $httpHost === '127.0.0.1' ||
+        strpos($httpHost, 'localhost:') === 0 ||
+        $serverName === 'localhost' ||
+
+        // Explicit environment files
+        file_exists(__DIR__ . '/.dev-environment') ||
+
+        // Development paths (common local development setups)
+        strpos($documentRoot, '/var/www/html') === 0 ||
+        strpos(__DIR__, '/home/') === 0 ||
+
+        // Default to development if no explicit production flag
+        !file_exists(__DIR__ . '/.production-environment')
     );
+
+    // Override: If production file exists, force production mode
+    if (file_exists(__DIR__ . '/.production-environment')) {
+        $isDev = false;
+    }
 
     if ($isDev) {
         // Development environment
@@ -47,5 +67,6 @@ $password = $dbConfig['password'];
 // Optional: Log which environment is being used
 if (function_exists('error_log')) {
     error_log("Database config loaded for: " . $dbConfig['environment'] . " environment");
+    error_log("Database credentials: host=" . $dbConfig['host'] . ", db=" . $dbConfig['dbname'] . ", user=" . $dbConfig['username']);
 }
 ?>
