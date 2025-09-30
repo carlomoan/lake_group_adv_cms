@@ -1,0 +1,108 @@
+URGENT FIX FOR PRODUCTION SERVER (testing.catehotel.co.tz)
+===========================================================
+
+PROBLEM IDENTIFIED:
+Your production server is using DEVELOPMENT database credentials instead of PRODUCTION.
+
+Diagnostic shows:
+   Environment: development  ← WRONG! Should be "production"
+   Database: lake_db         ← WRONG! Should be "cateeccx_lake_db"
+   Username: root            ← WRONG! Should be "cateeccx_lake_admin"
+
+ROOT CAUSE:
+The .production-environment file is MISSING from your production server.
+
+IMMEDIATE FIX (Do this on your production server):
+================================================================
+
+Step 1: Create the production environment file
+-----------------------------------------------
+SSH into your server or use File Manager, then:
+
+cd /home/cateeccx/testing.catehotel.co.tz/
+touch .production-environment
+
+OR use this PHP script (create force_production.php):
+
+<?php
+file_put_contents(__DIR__ . '/.production-environment', 'production');
+echo "✅ Production environment file created!";
+?>
+
+Access: http://testing.catehotel.co.tz/force_production.php
+
+
+Step 2: Verify it worked
+-------------------------
+Refresh: http://testing.catehotel.co.tz/admin/check_production.php
+
+You should now see:
+   Environment: production ✅
+   Database: cateeccx_lake_db ✅
+   Username: cateeccx_lake_admin ✅
+
+
+Step 3: Create production database (if it doesn't exist)
+---------------------------------------------------------
+Run these commands in your server's MySQL:
+
+mysql -u YOUR_MYSQL_ROOT_USER -p
+
+Then:
+
+CREATE DATABASE IF NOT EXISTS cateeccx_lake_db CHARACTER SET utf8mb4;
+CREATE USER IF NOT EXISTS 'cateeccx_lake_admin'@'localhost' IDENTIFIED BY 'Lake@2025';
+GRANT ALL PRIVILEGES ON cateeccx_lake_db.* TO 'cateeccx_lake_admin'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+
+Step 4: Import your database structure
+---------------------------------------
+Upload your database export to production, then:
+
+mysql -u cateeccx_lake_admin -pLake@2025 cateeccx_lake_db < your_database_export.sql
+
+
+VERIFICATION:
+=============
+After these steps, check again:
+http://testing.catehotel.co.tz/admin/check_production.php
+
+You should see:
+✅ Environment: production
+✅ Database Connection: CONNECTED
+✅ All tables exist
+
+Then your admin dashboard will work perfectly!
+
+
+QUICK PHP SOLUTION (if you can't access SSH):
+==============================================
+Create this file as "setup_production.php" in your root directory:
+
+<?php
+// Step 1: Create production environment file
+file_put_contents(__DIR__ . '/.production-environment', 'production');
+
+// Step 2: Try to create database and user
+$rootPassword = 'YOUR_MYSQL_ROOT_PASSWORD_HERE';
+try {
+    $pdo = new PDO('mysql:host=localhost', 'root', $rootPassword);
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS cateeccx_lake_db CHARACTER SET utf8mb4");
+    $pdo->exec("CREATE USER IF NOT EXISTS 'cateeccx_lake_admin'@'localhost' IDENTIFIED BY 'Lake@2025'");
+    $pdo->exec("GRANT ALL PRIVILEGES ON cateeccx_lake_db.* TO 'cateeccx_lake_admin'@'localhost'");
+    $pdo->exec("FLUSH PRIVILEGES");
+    echo "✅ Production database and user created!<br>";
+} catch (Exception $e) {
+    echo "⚠️ Database setup failed (you may need to do this manually via cPanel): " . $e->getMessage() . "<br>";
+}
+
+echo "✅ Production environment file created!<br>";
+echo "<br>Now check: <a href='admin/check_production.php'>Run Diagnostic Again</a>";
+?>
+
+Access: http://testing.catehotel.co.tz/setup_production.php
+
+
+THAT'S IT! Your production server will work after this! 🚀
