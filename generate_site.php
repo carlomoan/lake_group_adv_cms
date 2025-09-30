@@ -192,7 +192,18 @@ try {
     echo "✅ Generated website saved to: index_generated.html\n";
     echo "🌐 Site title set to: $siteTitle\n";
 
-    // Create/update a simple index.php redirect
+    // Handle file priority issue: if index.html exists, rename it as backup
+    $indexHtmlFile = __DIR__ . '/index.html';
+    if (file_exists($indexHtmlFile)) {
+        $backupFile = __DIR__ . '/index_old_backup.html';
+        if (rename($indexHtmlFile, $backupFile)) {
+            echo "📦 Renamed old index.html -> index_old_backup.html\n";
+        } else {
+            echo "⚠️  Warning: Could not rename index.html (check permissions)\n";
+        }
+    }
+
+    // Create/update index.php redirect (this will be served if index.html doesn't exist)
     $indexPhp = '<?php
 // Auto-generated redirect to database-powered website
 // This file is automatically updated when database content changes
@@ -200,14 +211,17 @@ header("Location: index_generated.html");
 exit;
 ?>';
 
-    file_put_contents(__DIR__ . '/index_new.php', $indexPhp);
-    echo "🔄 Created redirect file: index_new.php\n";
+    if (file_put_contents(__DIR__ . '/index.php', $indexPhp)) {
+        echo "🔄 Updated redirect file: index.php -> index_generated.html\n";
+    } else {
+        echo "⚠️  Warning: Could not update index.php (check permissions)\n";
+    }
 
     echo "\n🎉 Website generation complete!\n";
-    echo "📋 To activate:\n";
-    echo "   1. Rename index.html -> index_static.html (backup)\n";
-    echo "   2. Rename index_new.php -> index.php (activate)\n";
-    echo "   3. Website will now show database content!\n";
+    echo "📋 File priority handled automatically:\n";
+    echo "   ✅ Old index.html backed up (if existed)\n";
+    echo "   ✅ index.php redirects to index_generated.html\n";
+    echo "   ✅ Website will now show database content!\n";
 
 } catch (Exception $e) {
     echo "❌ Error: " . $e->getMessage() . "\n";
