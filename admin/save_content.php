@@ -538,9 +538,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $pdo->commit();
 
+        // Auto-regenerate the website with new content
+        try {
+            $output = shell_exec('cd ' . escapeshellarg(__DIR__ . '/..') . ' && php generate_site.php 2>&1');
+            $regenerated = true;
+            $regenerationLog = $output;
+        } catch (Exception $e) {
+            $regenerated = false;
+            $regenerationLog = 'Error: ' . $e->getMessage();
+        }
+
         echo json_encode([
             'success' => true,
-            'message' => 'Content saved successfully to database'
+            'message' => 'Content saved successfully to database',
+            'website_regenerated' => $regenerated,
+            'regeneration_log' => $regenerationLog
         ]);
 
     } catch (Exception $e) {
