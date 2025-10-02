@@ -75,15 +75,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     tertiary_color = ?
                 WHERE id = 1
             ");
+            // Handle both flat and nested logo structure
+            $logoMain = $content['siteSettings']['logo']['logoMain']
+                     ?? $content['siteSettings']['logoMain']
+                     ?? '';
+
+            $logoTransparent = $content['siteSettings']['logo']['logoTransparent']
+                            ?? $content['siteSettings']['logoTransparent']
+                            ?? '';
+
+            $logoWidth = $content['siteSettings']['logo']['logoWidth']
+                      ?? 150;
+
             $stmt->execute([
-                $content['siteSettings']['siteTitle'],
-                $content['siteSettings']['tagline'],
-                $content['siteSettings']['logo']['logoMain'] ?? '',
-                $content['siteSettings']['logo']['logoTransparent'] ?? '',
-                $content['siteSettings']['logo']['logoWidth'] ?? 150,
-                $content['siteSettings']['primaryColor'],
-                $content['siteSettings']['secondaryColor'],
-                $content['siteSettings']['tertiaryColor']
+                $content['siteSettings']['siteTitle'] ?? '',
+                $content['siteSettings']['tagline'] ?? '',
+                $logoMain,
+                $logoTransparent,
+                $logoWidth,
+                $content['siteSettings']['primaryColor'] ?? '#FFD200',
+                $content['siteSettings']['secondaryColor'] ?? '#484939',
+                $content['siteSettings']['tertiaryColor'] ?? '#1E3A8A'
             ]);
         }
 

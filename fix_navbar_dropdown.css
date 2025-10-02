@@ -1,0 +1,407 @@
+/**
+ * Enhanced Navbar and Dropdown Styles
+ * Fixes for sticky navbar background and multi-column dropdowns
+ */
+
+/* ============================================================================
+   NAVBAR FIXES
+   ============================================================================ */
+
+/* Always show navbar background (not transparent) */
+.l-header {
+    background: var(--navbar-bg-color, #ffffff) !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: all 0.4s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* When not scrolled - use configured transparency */
+.l-header:not(.scrolled) {
+    background: var(--navbar-bg-color-transparent, var(--navbar-bg-color, rgba(255, 255, 255, 0.95))) !important;
+}
+
+/* When scrolled - solid background */
+.l-header.scrolled {
+    background: var(--navbar-bg-color, #ffffff) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Top bar inherits navbar background */
+.top-bar {
+    background: transparent !important;
+}
+
+.top-bar-container {
+    background: transparent !important;
+}
+
+/* Text color from settings */
+.menu > li > a {
+    color: var(--navbar-text-color, #333333) !important;
+    text-shadow: none !important;
+}
+
+.menu > li > a:hover {
+    color: var(--navbar-hover-color, #FFD200) !important;
+}
+
+/* Scrolled state text adjustments */
+.l-header.scrolled .menu > li > a {
+    color: var(--navbar-text-color, #333333) !important;
+}
+
+/* ============================================================================
+   DROPDOWN MENU ENHANCEMENTS
+   ============================================================================ */
+
+/* Base dropdown styling */
+.dropdown,
+.sub-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 250px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    list-style: none !important;
+    padding: 0;
+    margin: 0;
+    z-index: 9999;
+
+    /* Default background */
+    background-color: var(--dropdown-bg-color, #ffffff);
+
+    /* Border radius from settings */
+    border-radius: var(--dropdown-border-radius, 4px);
+
+    /* Shadow from settings */
+    box-shadow: var(--dropdown-shadow, 0 10px 30px rgba(0, 0, 0, 0.2));
+
+    /* Border style from settings */
+    border: var(--dropdown-border, 1px solid rgba(0, 0, 0, 0.1));
+
+    overflow: hidden;
+}
+
+/* Background image support */
+.dropdown.has-bg-image,
+.sub-menu.has-bg-image {
+    background-image: var(--dropdown-bg-image);
+    background-size: var(--dropdown-bg-size, cover);
+    background-position: var(--dropdown-bg-position, center);
+    background-repeat: no-repeat;
+}
+
+/* Background gradient support */
+.dropdown.has-gradient,
+.sub-menu.has-gradient {
+    background: linear-gradient(
+        to bottom,
+        var(--dropdown-gradient-start, #ffffff),
+        var(--dropdown-gradient-end, #f8f9fa)
+    );
+}
+
+/* Show dropdown on hover */
+.has-dropdown:hover > .dropdown,
+.has-dropdown:hover > .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Dropdown items */
+.dropdown li,
+.sub-menu li {
+    list-style: none !important;
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown a,
+.sub-menu a {
+    display: block;
+    padding: var(--dropdown-item-padding, 12px 20px);
+    color: var(--dropdown-text-color, #333333) !important;
+    font-size: var(--dropdown-font-size, 14px);
+    line-height: var(--dropdown-line-height, 1.5);
+    text-decoration: none;
+    text-shadow: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.dropdown li:last-child a,
+.sub-menu li:last-child a {
+    border-bottom: none;
+}
+
+.dropdown a:hover,
+.sub-menu a:hover {
+    background: var(--dropdown-hover-bg, rgba(255, 210, 0, 0.1)) !important;
+    color: var(--dropdown-hover-text, #FFD200) !important;
+    padding-left: calc(var(--dropdown-item-padding, 12px 20px) + 10px);
+}
+
+/* ============================================================================
+   MULTI-COLUMN DROPDOWN LAYOUTS
+   ============================================================================ */
+
+/* Single column (default) */
+.dropdown.columns-1,
+.sub-menu.columns-1 {
+    min-width: 250px;
+    max-width: 300px;
+}
+
+/* Two column layout */
+.dropdown.columns-2,
+.sub-menu.columns-2 {
+    min-width: 500px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+
+.dropdown.columns-2 li,
+.sub-menu.columns-2 li {
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dropdown.columns-2 li:nth-child(2n),
+.sub-menu.columns-2 li:nth-child(2n) {
+    border-right: none;
+}
+
+/* Three column layout */
+.dropdown.columns-3,
+.sub-menu.columns-3 {
+    min-width: 750px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+}
+
+.dropdown.columns-3 li,
+.sub-menu.columns-3 li {
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dropdown.columns-3 li:nth-child(3n),
+.sub-menu.columns-3 li:nth-child(3n) {
+    border-right: none;
+}
+
+/* ============================================================================
+   DROPDOWN ANIMATION STYLES
+   ============================================================================ */
+
+/* Fade animation */
+.dropdown.animation-fade,
+.sub-menu.animation-fade {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Slide animation */
+.dropdown.animation-slide,
+.sub-menu.animation-slide {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scale animation */
+.dropdown.animation-scale,
+.sub-menu.animation-scale {
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ============================================================================
+   DROPDOWN ARROW STYLES
+   ============================================================================ */
+
+/* Chevron arrow */
+.has-dropdown.arrow-chevron > a::after {
+    content: '\f078';
+    font-family: 'FontAwesome';
+    font-size: 10px;
+    margin-left: 8px;
+}
+
+/* Plus arrow */
+.has-dropdown.arrow-plus > a::after {
+    content: '+';
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+/* Caret arrow */
+.has-dropdown.arrow-caret > a::after {
+    content: '▼';
+    font-size: 8px;
+    margin-left: 8px;
+}
+
+/* No arrow */
+.has-dropdown.arrow-none > a::after {
+    display: none;
+}
+
+/* ============================================================================
+   SHADOW INTENSITY OPTIONS
+   ============================================================================ */
+
+.dropdown.shadow-light,
+.sub-menu.shadow-light {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown.shadow-medium,
+.sub-menu.shadow-medium {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown.shadow-heavy,
+.sub-menu.shadow-heavy {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown.shadow-none,
+.sub-menu.shadow-none {
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================ */
+
+@media screen and (max-width: 1024px) {
+    /* Force single column on tablets */
+    .dropdown.columns-2,
+    .dropdown.columns-3,
+    .sub-menu.columns-2,
+    .sub-menu.columns-3 {
+        grid-template-columns: 1fr;
+        min-width: 250px;
+    }
+
+    .dropdown.columns-2 li,
+    .dropdown.columns-3 li,
+    .sub-menu.columns-2 li,
+    .sub-menu.columns-3 li {
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* Mobile navbar adjustments */
+    .l-header {
+        background: var(--navbar-bg-color, #ffffff) !important;
+    }
+
+    .dropdown,
+    .sub-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border-radius: 0;
+    }
+}
+
+/* ============================================================================
+   MULTI-LEVEL DROPDOWN SUPPORT
+   ============================================================================ */
+
+/* Second level dropdowns */
+.dropdown .has-dropdown,
+.sub-menu .has-dropdown {
+    position: relative;
+}
+
+.dropdown .has-dropdown > .dropdown,
+.sub-menu .has-dropdown > .sub-menu {
+    left: 100%;
+    top: 0;
+}
+
+.dropdown .has-dropdown:hover > .dropdown,
+.sub-menu .has-dropdown:hover > .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* Arrow for nested dropdowns */
+.dropdown .has-dropdown > a::after,
+.sub-menu .has-dropdown > a::after {
+    content: '\f054';
+    font-family: 'FontAwesome';
+    float: right;
+    margin-left: auto;
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Force dropdown visibility (for testing) */
+.dropdown.force-visible,
+.sub-menu.force-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+/* Disable dropdown */
+.has-dropdown.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Full width dropdown */
+.dropdown.full-width,
+.sub-menu.full-width {
+    left: 0;
+    right: 0;
+    max-width: none;
+    width: 100%;
+}
