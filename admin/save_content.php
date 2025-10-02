@@ -85,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ?? '';
 
             $logoWidth = $content['siteSettings']['logo']['logoWidth']
+                      ?? $content['siteSettings']['logoWidth']
                       ?? 150;
 
             $stmt->execute([
@@ -594,11 +595,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'primaryColor' => $siteSettings['primary_color'],
                 'secondaryColor' => $siteSettings['secondary_color'],
                 'tertiaryColor' => $siteSettings['tertiary_color'],
-                'logo' => [
-                    'logoMain' => $siteSettings['logo_main'],
-                    'logoTransparent' => $siteSettings['logo_transparent'],
-                    'logoWidth' => $siteSettings['logo_width']
-                ]
+                // Use flat structure to match form inputs
+                'logoMain' => $siteSettings['logo_main'],
+                'logoTransparent' => $siteSettings['logo_transparent'],
+                'logoWidth' => $siteSettings['logo_width']
             ];
         }
 
