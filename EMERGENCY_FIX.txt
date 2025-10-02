@@ -1,0 +1,170 @@
+================================================================================
+EMERGENCY FIX - DATABASE_METHODS Not Loading
+================================================================================
+
+PROBLEM CONFIRMED:
+------------------
+✅ Schema updated correctly
+✅ save_content.php works correctly
+❌ DATABASE_METHODS script not loading in browser
+❌ Admin form falls back to localStorage
+
+ROOT CAUSE:
+-----------
+Production server has OLD version of admin/index.html
+The updated version with DATABASE_METHODS (line 1729-1863) is not uploaded
+
+IMMEDIATE FIX (2 Options):
+==========================
+
+OPTION 1: Upload Updated admin/index.html (RECOMMENDED)
+---------------------------------------------------------
+The admin/index.html in your local folder HAS the DATABASE_METHODS script.
+Production server DOES NOT have it.
+
+Steps:
+1. Upload the LOCAL file to production:
+   From: /home/andrew/Documents/Untitled Folder/alice/themes.webdevia.com/petroleum-gas/admin/index.html
+   To: testing.catehotel.co.tz/admin/index.html
+
+2. Clear browser cache (Ctrl+F5)
+
+3. Reload admin page
+
+4. Check console - should see:
+   "Database methods loaded and ready for injection"
+
+5. Try saving - should see:
+   "Content saved successfully to database!"
+
+
+OPTION 2: Use Emergency Injection Script (QUICK WORKAROUND)
+------------------------------------------------------------
+If you can't upload admin/index.html yet, use this workaround:
+
+Steps:
+1. Upload inject_database_methods.js to production
+
+2. Edit production's admin/index.html via cPanel File Manager or FTP
+
+3. Find this line (near the end, before </body>):
+   <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+
+4. Add AFTER it:
+   <script src="/inject_database_methods.js"></script>
+
+5. Save file
+
+6. Reload admin page in browser
+
+7. Should now work!
+
+
+VERIFICATION:
+=============
+
+After either fix, test in browser console:
+
+1. Open: http://testing.catehotel.co.tz/admin/
+2. Press F12 (open console)
+3. Type: window.DATABASE_METHODS
+4. Press Enter
+
+Should show:
+{
+  deepMerge: function,
+  isObject: function,
+  saveContent: function,
+  loadContent: function
+}
+
+If it shows "undefined" - fix didn't work yet.
+
+
+FULL TEST:
+==========
+
+1. Go to admin → Navbar Settings
+2. Enter logo URL: /uploads/LG24_-_Group_1759092498.jpg
+3. Click "Save Navbar Settings"
+4. Console should show:
+   ✅ "Using database integration for save"
+   ✅ "Saving content to database..."
+   ✅ "Content saved successfully to database!"
+
+5. NOT this (bad):
+   ❌ "Database integration not available"
+   ❌ "Content saved to local storage (fallback mode)"
+
+6. Reload page - logo URL should still be there
+7. Check database:
+   SELECT logo_main FROM site_settings WHERE id=1;
+   Should show: /uploads/LG24_-_Group_1759092498.jpg
+
+
+WHY THIS HAPPENED:
+==================
+
+The local admin/index.html was updated with DATABASE_METHODS script.
+But production server still has the old version without it.
+
+Solution: Upload the updated admin/index.html to production.
+
+
+FILES TO UPLOAD:
+================
+
+Priority 1 (Required):
+  ✓ admin/index.html (MAIN FIX - has DATABASE_METHODS built-in)
+
+Priority 2 (If can't upload index.html):
+  ✓ inject_database_methods.js (Emergency workaround)
+  ✓ Then add <script> tag to existing index.html on server
+
+Priority 3 (Already done):
+  ✓ admin/save_content.php (already updated)
+  ✓ auto_update_schema.php (already ran)
+
+
+FASTEST FIX:
+============
+
+Just upload admin/index.html from local to production!
+
+That file already has:
+✅ DATABASE_METHODS script (lines 1729-1863)
+✅ Updated saveContent method (lines 2599-2613)
+✅ Updated loadContent method (lines 2615-2633)
+✅ All form fields properly connected
+
+It's complete and ready to use!
+
+
+NEXT STEPS AFTER FIX:
+=====================
+
+Once DATABASE_METHODS loads:
+
+1. ✅ All admin forms will save to database
+2. ✅ Changes will persist after reload
+3. ✅ Logo URLs will save correctly
+4. ✅ Website will auto-regenerate
+5. ✅ No more localStorage fallback
+
+Then you can:
+- Import media files (import_existing_media.php)
+- Fix navbar styling (fix_navbar_dropdown.css)
+- Test all admin sections
+- Configure dropdown menus
+- Everything will work!
+
+
+CONTACT:
+========
+
+After uploading admin/index.html:
+- Run check_save_flow.html again
+- Test 1 should now show: ✅ DATABASE_METHODS exists
+- Share results if still issues
+
+================================================================================
