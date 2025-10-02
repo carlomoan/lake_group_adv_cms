@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Save Flow Checker</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .success { color: #4ec9b0; font-weight: bold; }
+        .error { color: #f48771; font-weight: bold; }
+        .warning { color: #dcdcaa; }
+        .info { color: #569cd6; }
+        pre {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .box {
+            background: #2d2d2d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #569cd6;
+        }
+        button {
+            background: #0e639c;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        button:hover { background: #1177bb; }
+        h2 { color: #569cd6; }
+        input { padding: 10px; width: 100%; margin: 5px 0; background: #2d2d2d; color: #d4d4d4; border: 1px solid #444; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Admin Save Flow Checker</h1>
+
+    <div class="box">
+        <h2>Test 1: Check if DATABASE_METHODS exists</h2>
+        <button onclick="checkDatabaseMethods()">Check DATABASE_METHODS</button>
+        <div id="result1"></div>
+    </div>
+
+    <div class="box">
+        <h2>Test 2: Test Save to Debug Endpoint</h2>
+        <p>Enter logo URL to test:</p>
+        <input type="text" id="logoUrl" value="/uploads/test-logo.png" placeholder="Logo URL">
+        <button onclick="testSave()">Test Save</button>
+        <div id="result2"></div>
+    </div>
+
+    <div class="box">
+        <h2>Test 3: Test Real save_content.php</h2>
+        <button onclick="testRealSave()">Test Real Endpoint</button>
+        <div id="result3"></div>
+    </div>
+
+    <div class="box">
+        <h2>Test 4: Check Debug Log</h2>
+        <button onclick="checkLog()">View Debug Log</button>
+        <div id="result4"></div>
+    </div>
+
+    <div class="box">
+        <h2>Test 5: Check Database</h2>
+        <button onclick="checkDatabase()">Check Database Values</button>
+        <div id="result5"></div>
+    </div>
+
+    <script>
+        function checkDatabaseMethods() {
+            const result = document.getElementById('result1');
+            result.innerHTML = '<p class="info">Checking...</p>';
+
+            if (typeof window.DATABASE_METHODS !== 'undefined') {
+                result.innerHTML = '<p class="success">✅ DATABASE_METHODS exists</p>';
+                result.innerHTML += '<p>Available methods:</p>';
+                result.innerHTML += '<pre>' + Object.keys(window.DATABASE_METHODS).join('\n') + '</pre>';
+
+                // Check if methods are functions
+                if (typeof window.DATABASE_METHODS.saveContent === 'function') {
+                    result.innerHTML += '<p class="success">✅ saveContent is a function</p>';
+                } else {
+                    result.innerHTML += '<p class="error">❌ saveContent is not a function</p>';
+                }
+            } else {
+                result.innerHTML = '<p class="error">❌ DATABASE_METHODS not found!</p>';
+                result.innerHTML += '<p class="warning">This means the database integration script did not load.</p>';
+                result.innerHTML += '<p>Check admin/index.html for DATABASE_METHODS script.</p>';
+            }
+        }
+
+        async function testSave() {
+            const result = document.getElementById('result2');
+            const logoUrl = document.getElementById('logoUrl').value;
+
+            result.innerHTML = '<p class="info">Testing save...</p>';
+
+            const testData = {
+                content: {
+                    siteSettings: {
+                        siteTitle: 'Test Title',
+                        tagline: 'Test Tagline',
+                        logoMain: logoUrl,
+                        logoTransparent: logoUrl,
+                        logo: {
+                            logoMain: logoUrl,
+                            logoTransparent: logoUrl,
+                            logoWidth: 150,
+                            logoHeight: 50
+                        },
+                        primaryColor: '#FFD200',
+                        secondaryColor: '#484939',
+                        tertiaryColor: '#1E3A8A'
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch('/test_save_debug.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    result.innerHTML = '<p class="success">✅ Data sent successfully!</p>';
+                    result.innerHTML += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    result.innerHTML += '<p class="info">Check save_debug.log file for details</p>';
+                } else {
+                    result.innerHTML = '<p class="error">❌ Failed</p>';
+                    result.innerHTML += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                }
+            } catch (error) {
+                result.innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function testRealSave() {
+            const result = document.getElementById('result3');
+            const logoUrl = document.getElementById('logoUrl').value;
+
+            result.innerHTML = '<p class="info">Testing real endpoint...</p>';
+
+            const testData = {
+                content: {
+                    siteSettings: {
+                        siteTitle: 'Test Title',
+                        tagline: 'Test Tagline',
+                        logoMain: logoUrl,
+                        logoTransparent: logoUrl,
+                        logo: {
+                            logoMain: logoUrl,
+                            logoTransparent: logoUrl,
+                            logoWidth: 150
+                        },
+                        primaryColor: '#FFD200',
+                        secondaryColor: '#484939',
+                        tertiaryColor: '#1E3A8A'
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch('/admin/save_content.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const text = await response.text();
+
+                result.innerHTML = '<p>Response status: ' + response.status + '</p>';
+                result.innerHTML += '<p>Response:</p>';
+
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        result.innerHTML += '<p class="success">✅ Saved successfully!</p>';
+                    } else {
+                        result.innerHTML += '<p class="error">❌ Save failed</p>';
+                    }
+                    result.innerHTML += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                } catch (e) {
+                    result.innerHTML += '<p class="error">❌ Not valid JSON</p>';
+                    result.innerHTML += '<pre>' + text.substring(0, 1000) + '</pre>';
+                }
+            } catch (error) {
+                result.innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function checkLog() {
+            const result = document.getElementById('result4');
+            result.innerHTML = '<p class="info">Fetching log...</p>';
+
+            try {
+                const response = await fetch('/save_debug.log');
+                const text = await response.text();
+
+                result.innerHTML = '<p class="success">✅ Log file contents:</p>';
+                result.innerHTML += '<pre>' + text + '</pre>';
+            } catch (error) {
+                result.innerHTML = '<p class="warning">⚠️ Log file not found or not readable</p>';
+                result.innerHTML += '<p>Run Test 2 first to create the log</p>';
+            }
+        }
+
+        async function checkDatabase() {
+            const result = document.getElementById('result5');
+            result.innerHTML = '<p class="info">Checking database...</p>';
+
+            try {
+                const response = await fetch('/admin/save_content.php', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.content) {
+                    result.innerHTML = '<p class="success">✅ Loaded from database</p>';
+
+                    if (data.content.siteSettings) {
+                        result.innerHTML += '<h3>Site Settings:</h3>';
+                        result.innerHTML += '<pre>' + JSON.stringify(data.content.siteSettings, null, 2) + '</pre>';
+                    }
+
+                    // Check logo fields specifically
+                    const logoMain = data.content.siteSettings?.logo?.logoMain || data.content.siteSettings?.logoMain;
+                    const logoTrans = data.content.siteSettings?.logo?.logoTransparent || data.content.siteSettings?.logoTransparent;
+
+                    result.innerHTML += '<h3>Logo URLs:</h3>';
+                    result.innerHTML += '<p>Main Logo: <strong>' + (logoMain || 'NOT SET') + '</strong></p>';
+                    result.innerHTML += '<p>Transparent Logo: <strong>' + (logoTrans || 'NOT SET') + '</strong></p>';
+                } else {
+                    result.innerHTML = '<p class="error">❌ Failed to load</p>';
+                    result.innerHTML += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                }
+            } catch (error) {
+                result.innerHTML = '<p class="error">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        // Auto-run first test
+        window.addEventListener('load', () => {
+            checkDatabaseMethods();
+        });
+    </script>
+</body>
+</html>
