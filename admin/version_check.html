@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Admin Version Check</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .result { padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        pre { background: white; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Admin Index.html Version Check</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = 'result ' + type;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        // Check 1: File modification time
+        fetch('/admin/index.html', { method: 'HEAD' })
+            .then(response => {
+                const lastModified = response.headers.get('Last-Modified');
+                addResult(`<strong>index.html Last-Modified:</strong> ${lastModified || 'Not available'}`, 'info');
+            })
+            .catch(err => {
+                addResult(`<strong>Error checking file:</strong> ${err.message}`, 'error');
+            });
+
+        // Check 2: Fetch partial content to verify DATABASE_METHODS exists
+        fetch('/admin/index.html')
+            .then(response => response.text())
+            .then(html => {
+                const hasDatabaseMethods = html.includes('window.DATABASE_METHODS');
+                const hasDeepMerge = html.includes('deepMerge(target, source)');
+                const hasLogoMain = html.includes('logoMain');
+                const hasLogoNested = html.includes('content.siteSettings.logo.logoWidth');
+
+                if (hasDatabaseMethods) {
+                    addResult(`✅ <strong>DATABASE_METHODS found in HTML</strong>`, 'success');
+                } else {
+                    addResult(`❌ <strong>DATABASE_METHODS NOT found in HTML</strong> - File is outdated!`, 'error');
+                }
+
+                if (hasDeepMerge) {
+                    addResult(`✅ <strong>deepMerge function found</strong>`, 'success');
+                } else {
+                    addResult(`❌ <strong>deepMerge function NOT found</strong>`, 'error');
+                }
+
+                if (hasLogoMain) {
+                    addResult(`✅ <strong>logoMain references found</strong>`, 'success');
+                } else {
+                    addResult(`⚠️ <strong>logoMain NOT found</strong>`, 'info');
+                }
+
+                if (hasLogoNested) {
+                    addResult(`❌ <strong>NESTED logo structure found (content.siteSettings.logo.logoWidth)</strong> - This will cause errors!`, 'error');
+                } else {
+                    addResult(`✅ <strong>No nested logo structure found</strong> - Using flat structure correctly`, 'success');
+                }
+
+                // Extract script section
+                const scriptMatch = html.match(/window\.DATABASE_METHODS\s*=\s*\{[\s\S]*?\};/);
+                if (scriptMatch) {
+                    addResult(`<strong>DATABASE_METHODS code extract:</strong><pre>${scriptMatch[0].substring(0, 500)}...</pre>`, 'info');
+                }
+
+                // Check file size
+                addResult(`<strong>File size:</strong> ${(html.length / 1024).toFixed(2)} KB (${html.length} bytes)`, 'info');
+
+                // Count script tags
+                const scriptCount = (html.match(/<script/g) || []).length;
+                addResult(`<strong>Script tags:</strong> ${scriptCount}`, 'info');
+            })
+            .catch(err => {
+                addResult(`<strong>Error fetching content:</strong> ${err.message}`, 'error');
+            });
+
+        // Check 3: Test if DATABASE_METHODS loads in runtime
+        setTimeout(() => {
+            if (window.DATABASE_METHODS) {
+                addResult(`✅ <strong>window.DATABASE_METHODS exists in runtime</strong>`, 'success');
+
+                if (typeof window.DATABASE_METHODS.deepMerge === 'function') {
+                    addResult(`✅ <strong>deepMerge is a function</strong>`, 'success');
+
+                    // Test deepMerge
+                    try {
+                        const result = window.DATABASE_METHODS.deepMerge({a: 1}, {b: 2});
+                        if (result.a === 1 && result.b === 2) {
+                            addResult(`✅ <strong>deepMerge works correctly</strong>`, 'success');
+                        }
+                    } catch (e) {
+                        addResult(`❌ <strong>deepMerge error:</strong> ${e.message}`, 'error');
+                    }
+                } else {
+                    addResult(`❌ <strong>deepMerge is not a function</strong>`, 'error');
+                }
+            } else {
+                addResult(`❌ <strong>window.DATABASE_METHODS does NOT exist in runtime</strong> - Script not loaded!`, 'error');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

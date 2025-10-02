@@ -470,17 +470,17 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Logo Width (px):</label>
-                            <input v-model.number="content.siteSettings.logo.logoWidth" type="number" class="form-input" min="50" max="500">
+                            <input v-model.number="content.siteSettings.logoWidth" type="number" class="form-input" min="50" max="500">
                         </div>
                         <div class="form-group">
                             <label>Logo Height (px):</label>
-                            <input v-model.number="content.siteSettings.logo.logoHeight" type="number" class="form-input" min="20" max="200">
+                            <input v-model.number="content.siteSettings.logoHeight" type="number" class="form-input" min="20" max="200">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Logo Alt Text:</label>
-                        <input v-model="content.siteSettings.logo.altText" class="form-input" placeholder="Logo description for accessibility">
+                        <input v-model="content.siteSettings.logoAltText" class="form-input" placeholder="Logo description for accessibility">
                     </div>
 
                     <button @click="saveContent" class="btn btn-primary">Save Navbar Settings</button>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Syntax Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+    <div id="test">
+        <h1>Testing Admin JavaScript Syntax</h1>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+
+        function log(message, type = 'info') {
+            const p = document.createElement('p');
+            p.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'blue';
+            p.textContent = message;
+            results.appendChild(p);
+        }
+
+        // Test 1: Check if DATABASE_METHODS can be defined
+        try {
+            window.DATABASE_METHODS = {
+                deepMerge(target, source) {
+                    const output = { ...target };
+                    if (this.isObject(target) && this.isObject(source)) {
+                        Object.keys(source).forEach(key => {
+                            if (this.isObject(source[key])) {
+                                if (!(key in target)) {
+                                    Object.assign(output, { [key]: source[key] });
+                                } else {
+                                    output[key] = this.deepMerge(target[key], source[key]);
+                                }
+                            } else {
+                                Object.assign(output, { [key]: source[key] });
+                            }
+                        });
+                    }
+                    return output;
+                },
+
+                isObject(item) {
+                    return item && typeof item === 'object' && !Array.isArray(item);
+                },
+
+                async saveContent() {
+                    this.showNotification('Test save', 'info');
+                },
+
+                async loadContent() {
+                    this.content = window.DATABASE_METHODS.deepMerge(this.content, {test: 'data'});
+                }
+            };
+            log('✅ DATABASE_METHODS defined successfully', 'success');
+        } catch (e) {
+            log('❌ DATABASE_METHODS error: ' + e.message, 'error');
+        }
+
+        // Test 2: Check if DATABASE_METHODS is accessible
+        if (window.DATABASE_METHODS) {
+            log('✅ DATABASE_METHODS accessible via window', 'success');
+        } else {
+            log('❌ DATABASE_METHODS not found on window', 'error');
+        }
+
+        // Test 3: Check deepMerge function
+        try {
+            const result = window.DATABASE_METHODS.deepMerge({a: 1}, {b: 2});
+            if (result.a === 1 && result.b === 2) {
+                log('✅ deepMerge works correctly', 'success');
+            } else {
+                log('❌ deepMerge returned wrong result', 'error');
+            }
+        } catch (e) {
+            log('❌ deepMerge error: ' + e.message, 'error');
+        }
+
+        // Test 4: Try to create a simple Vue app
+        try {
+            const { createApp } = Vue;
+            const app = createApp({
+                data() {
+                    return {
+                        content: {
+                            siteSettings: {
+                                logoMain: '',
+                                logoTransparent: '',
+                                logoWidth: 150,
+                                logoHeight: 50,
+                                logoAltText: 'Test'
+                            }
+                        }
+                    };
+                },
+                methods: {
+                    async saveContent() {
+                        if (window.DATABASE_METHODS && window.DATABASE_METHODS.saveContent) {
+                            return await window.DATABASE_METHODS.saveContent.call(this);
+                        }
+                    },
+                    showNotification(msg, type) {
+                        log('Notification: ' + msg, type);
+                    }
+                }
+            });
+            log('✅ Vue app created successfully', 'success');
+        } catch (e) {
+            log('❌ Vue app error: ' + e.message, 'error');
+        }
+
+        log('All tests completed!', 'info');
+    </script>
+</body>
+</html>

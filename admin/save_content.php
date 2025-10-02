@@ -70,6 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     logo_main = ?,
                     logo_transparent = ?,
                     logo_width = ?,
+                    logo_height = ?,
+                    logo_alt_text = ?,
                     primary_color = ?,
                     secondary_color = ?,
                     tertiary_color = ?
@@ -88,12 +90,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       ?? $content['siteSettings']['logoWidth']
                       ?? 150;
 
+            $logoHeight = $content['siteSettings']['logo']['logoHeight']
+                       ?? $content['siteSettings']['logoHeight']
+                       ?? 50;
+
+            $logoAltText = $content['siteSettings']['logo']['altText']
+                        ?? $content['siteSettings']['logoAltText']
+                        ?? 'Logo';
+
             $stmt->execute([
                 $content['siteSettings']['siteTitle'] ?? '',
                 $content['siteSettings']['tagline'] ?? '',
                 $logoMain,
                 $logoTransparent,
                 $logoWidth,
+                $logoHeight,
+                $logoAltText,
                 $content['siteSettings']['primaryColor'] ?? '#FFD200',
                 $content['siteSettings']['secondaryColor'] ?? '#484939',
                 $content['siteSettings']['tertiaryColor'] ?? '#1E3A8A'
@@ -598,7 +610,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Use flat structure to match form inputs
                 'logoMain' => $siteSettings['logo_main'],
                 'logoTransparent' => $siteSettings['logo_transparent'],
-                'logoWidth' => $siteSettings['logo_width']
+                'logoWidth' => (int)$siteSettings['logo_width'],
+                'logoHeight' => (int)$siteSettings['logo_height'],
+                'logoAltText' => $siteSettings['logo_alt_text']
             ];
         }
 
